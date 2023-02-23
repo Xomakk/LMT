@@ -1,0 +1,91 @@
+.report-a-bug {
+    display: block;
+    width: 100%;
+    text-align: end;
+}
+
+.group {
+    margin-top: 50px;
+    display: flex;
+
+    &__title {
+        font-weight: 500;
+        font-size: 24px;
+        line-height: 28px;
+        letter-spacing: -0.015em;
+        margin-bottom: 30px;
+    }
+
+    &__students {
+        margin-right: 80px;
+    }
+
+    &__time-table {
+    }
+}
+
+.students {
+
+    &__label {
+        margin-bottom: 10px;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 23px;
+        letter-spacing: -0.015em;
+        color: #626262;
+    }
+
+    &__list-box {
+        padding: 10px 0;
+        background-color: #fff;
+        width: 500px;
+    }
+
+    &__list {
+
+        &__row{
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+
+            &:hover{
+                background-color: rgb(245, 245, 245);
+            }
+        }
+
+        &__num{
+            margin-right: 10px;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 21px;
+            letter-spacing: -0.015em;
+            color: #414141;
+        }
+
+        &__img{
+            margin-right: 20px;
+            width: 50px;
+            height: 50px;
+        }
+
+        &__full-name{
+            font-weight: 300;
+            font-size: 18px;
+            line-height: 21px;
+            letter-spacing: -0.015em;
+            color: #000;
+        }
+    }
+}
+
+.time-table {
+
+    &__box {
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 23px;
+        letter-spacing: -0.015em;
+        color: #626262;
+    }
+}

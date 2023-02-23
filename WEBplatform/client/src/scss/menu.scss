@@ -1,0 +1,45 @@
+.menu {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    overflow: hidden;
+    
+    height: 150%;
+    width: 75px;
+    padding: 90px 0;
+    z-index: 99;
+    top: 0;
+
+    background: #ced8fcc9;
+    
+    transition-duration: 500ms;
+
+    &:hover{
+        width: 250px;
+    }
+
+    &__link {
+        display: flex;
+        align-items: center;
+        padding: 7px 15px;
+
+        transition-duration: 300ms;
+        &:hover {
+            background-color: rgba(255, 255, 255, 0.35);
+        }
+    }
+
+    &__img {
+        margin-right: 15px;
+        width: 45px;
+        height: 45px;
+    }
+
+    &__label {
+        font-size: 18px;
+        line-height: 21px;
+        color: #000000;
+        letter-spacing: -0.015em;
+        white-space: nowrap;
+    }
+}

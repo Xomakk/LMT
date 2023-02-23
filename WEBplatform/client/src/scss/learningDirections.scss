@@ -1,0 +1,51 @@
+.learningDirections {
+    padding: 100px 0;
+
+    &__title {
+        margin-bottom: 50px;
+    }
+
+    &__wrapper {
+        
+    }
+
+    &__table {
+        display: flex;
+        justify-content: start;
+        flex-wrap: wrap;
+    }
+
+    &__block {
+        width: 270px;
+        margin-right: 50px;
+        padding: 10px;
+
+        &:hover .learningDirections__img-block {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.414);
+        }
+    }
+
+    &__add-block {
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    &__img-block {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #D9D9D9;
+        border-radius: 10px;
+        height: 200px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition-duration: 300ms;
+    }
+
+    &__img {
+        height: 100%;
+    }
+
+    &__name {}
+}

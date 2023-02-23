@@ -1,0 +1,51 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import "nullstyles.scss";
+@import "header.scss";
+@import "Loginpage.scss";
+@import "GroupsPage.scss";
+@import "SingleGroupPage.scss";
+@import "menu.scss";
+@import "loading.scss";
+@import "learningDirections.scss";
+@import "singleLearningDirection.scss";
+@import "popup-add.scss";
+@import "popup-change.scss";
+@import "popup-addDirection.scss";
+@import "popup.scss";
+
+
+body {
+    font-family: 'Roboto';
+    font-style: normal;
+    background-color: #FAFAFA;
+}
+
+
+.container{
+    padding-top: 65px;
+    width: 1360px;
+    margin: 0 auto;
+}
+
+h2 {
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 28px;
+    letter-spacing: -0.015em;
+}
+
+
+h3 {
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
+    letter-spacing: -0.015em;
+}
+
+
+@media (max-width: 1600px) {
+    .container {
+        width: 1200px;
+        margin: 0 auto;
+    }
+}
