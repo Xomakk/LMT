@@ -16,8 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 
-import lesson.urls
-import timetable.urls
 import user.urls
 import groups.urls
 import learningDirections.urls
@@ -42,17 +40,14 @@ urlpatterns = [
     path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]
 
-# path to profiles
+# path to users
 urlpatterns.extend(user.urls.urlpatterns)
 
 # path to groups
 urlpatterns.extend(groups.urls.urlpatterns)
 
-# path to directions
+# path to lesson directions
 urlpatterns.extend(learningDirections.urls.urlpatterns)
 
-# path to lessons
-urlpatterns.extend(lesson.urls.urlpatterns)
-
-# path to lessons
-urlpatterns.extend(timetable.urls.urlpatterns)
+# path to feedback
+urlpatterns.extend(learningDirections.urls.urlpatterns)

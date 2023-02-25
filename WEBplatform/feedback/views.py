@@ -1,10 +1,6 @@
-# Create your views here.
+from django.shortcuts import render
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import IsAuthenticated
-
-from timetable.models import timeTable
-from timetable.models import lesson
-from timetable.serializers import timeTableSerializer
 
 
 class TimetableCreateView(ListCreateAPIView):
