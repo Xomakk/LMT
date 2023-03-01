@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include, re_path
 
+import feedback.urls
 import user.urls
 import groups.urls
 import learningDirections.urls
@@ -50,4 +51,4 @@ urlpatterns.extend(groups.urls.urlpatterns)
 urlpatterns.extend(learningDirections.urls.urlpatterns)
 
 # path to feedback
-urlpatterns.extend(learningDirections.urls.urlpatterns)
+urlpatterns.extend(feedback.urls.urlpatterns)

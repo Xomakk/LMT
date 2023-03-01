@@ -19,57 +19,31 @@ function Profile() {
         }
     };
 
-    // {
-    //     "id":1,
-    //     "username":"admin",
-    //     "email":"admin@mail.ru",
-    //     "is_active":true,
-    //     "is_superuser":true,
-    //     "is_staff":true,
-    //     "name":"Илья",
-    //     "lastname":"Козлобродов",
-    //     "groups":[],
-    //     "learningDirections":[1]
-    // }
+    return(
+        <>
+            {user &&
+                <div className="profile-box" onClick={handleClick}>
+                    <a className="profile-box__img">
+                        <img src="#" />
+                    </a>
+                    <a className="profile-box__label">
+                        {`${user.name} ${user.lastname}`}
+                    </a>
+                </div>
+            }
 
-    // if (!user) {
-    //     return(
-    //         <div className="profile-box">
-    //             <a className="profile-box__img">
-    //                 <img src="#" />
-    //             </a>
-    //             <a className="profile-box__label" onClick={handleClick}>
-    //                 Авторизоваться
-    //             </a>
-    //         </div>
-    //     );
-    // } else {
-        return(
-            <>
-                {user &&
-                    <div className="profile-box" onClick={handleClick}>
-                        <a className="profile-box__img">
-                            <img src="#" />
-                        </a>
-                        <a className="profile-box__label">
-                            {`${user.name} ${user.lastname}`}
-                        </a>
-                    </div>
-                }
-
-                {!user && 
-                    <div className="profile-box" onClick={handleClick}>
-                        <a className="profile-box__img">
-                            <img src="#" />
-                        </a>
-                        <a className="profile-box__label">
-                            Авторизоваться
-                        </a>
-                    </div>
-                }
-            </>
-        );
-    // }
+            {!user && 
+                <div className="profile-box" onClick={handleClick}>
+                    <a className="profile-box__img">
+                        <img src="#" />
+                    </a>
+                    <a className="profile-box__label">
+                        Авторизоваться
+                    </a>
+                </div>
+            }
+        </>
+    );
 };
 
 export default Profile;

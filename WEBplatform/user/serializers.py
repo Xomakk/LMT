@@ -9,15 +9,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'password2', 'name', 'lastname', 'is_staff', 'is_active', 'userType']
+        fields = ['email', 'password', 'password2', 'name', 'lastname', 'patronymic', 'is_staff', 'is_manager',
+                  'is_teacher', 'is_student']
 
     def save(self, *args, **kwargs):
         user = User(
             email=self.validated_data['email'],  # Назначаем Email
-            username=self.validated_data['username'],  # Назначаем Логин
             name=self.validated_data['name'],
             lastname=self.validated_data['lastname'],
-            userType=self.validated_data['userType'],
+            patronymic=self.validated_data['patronymic'],
             **kwargs,
         )
         password = self.validated_data['password']
@@ -30,9 +30,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    userType = serializers.StringRelatedField(read_only=True)
-    # learningDirections = learningDirectionSerializer(many=True)
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'name', 'lastname', 'userType']
+        fields = ['id', 'email', 'name', 'lastname', 'patronymic', 'is_manager', 'is_teacher', 'is_student']

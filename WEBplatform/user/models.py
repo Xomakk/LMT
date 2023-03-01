@@ -22,6 +22,7 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, is_staff=True, is_superuser=True, **kwargs)
 
 
+# не используется
 class UserType(models.Model):
     type = models.CharField(max_length=255)
 
@@ -48,5 +49,18 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     objects = UserManager()
 
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ('-is_manager', '-is_teacher', '-is_student', 'lastname')
+
     def __str__(self):
-        return f"{self.lastname} {self.name} {self.patronymic}"
+        positions = []
+        if self.is_manager:
+            positions.append('Администратор')
+        if self.is_teacher:
+            positions.append('Преподаватель')
+        if self.is_student:
+            positions.append('Ученик')
+
+        return f"{self.lastname} {self.name} {self.patronymic} [{', '.join(positions)}]"

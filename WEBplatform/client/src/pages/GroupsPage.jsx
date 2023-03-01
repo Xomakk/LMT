@@ -20,6 +20,10 @@ export default function GroupsPage() {
         dispatch(updateToken());
     }
 
+    const checkDay = (day_num, days_list) => {
+        if (days_list.filter(day => day.day_number === day_num).length > 0) {return true } else {return false}
+    };
+
     return(
         <>  
                 { status == 'loading' && 
@@ -40,7 +44,7 @@ export default function GroupsPage() {
                             <div className="group__wrapper monday">
                                 <h3 className="group__day">Понедельник</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'понедельник' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(1, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">
@@ -54,11 +58,11 @@ export default function GroupsPage() {
                                         )
                                 }
                             </div>
-            
+
                             <div className="group__wrapper tuesday">
                                 <h3 className="group__day">Вторник</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'вторник' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(2, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">
@@ -76,7 +80,7 @@ export default function GroupsPage() {
                             <div className="group__wrapper wednesday">
                                 <h3 className="group__day">Среда</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'среда' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(3, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">
@@ -94,7 +98,7 @@ export default function GroupsPage() {
                             <div className="group__wrapper thursday">
                                 <h3 className="group__day">Четверг</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'четверг' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(4, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">
@@ -112,7 +116,7 @@ export default function GroupsPage() {
                             <div className="group__wrapper friday">
                                 <h3 className="group__day">Пятница</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'пятница' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(5, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">
@@ -130,7 +134,7 @@ export default function GroupsPage() {
                             <div className="group__wrapper saturday">
                                 <h3 className="group__day">Суббота</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'суббота' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(6, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">
@@ -148,7 +152,7 @@ export default function GroupsPage() {
                             <div className="group__wrapper sunday">
                                 <h3 className="group__day">Воскресенье</h3>
                                 {
-                                    groups.filter( group => group.teacher == currentUser.id && group.dayOfLessons == 'воскресенье' )
+                                    groups.filter( group => group.teacher == currentUser.id && checkDay(7, group.dayOfLessons) )
                                         .map(group => (
                                                 <Link to={`${group.id}`} className='group__link' key={group.id}>
                                                     <div className="group__box">

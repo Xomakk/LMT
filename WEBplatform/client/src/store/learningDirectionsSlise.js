@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import BASE_URL from './const';
 
 export const fetchLearningDirections = createAsyncThunk(
-    'groups/fetchGroups',
+    'learningDirections/fetchLearningDirections',
     async function(_, {rejectWithValue}) {
         try {
             const access_token = JSON.parse(localStorage.getItem('access_token'))
@@ -32,37 +32,66 @@ export const fetchLearningDirections = createAsyncThunk(
     }
 );
 
+
+async function CreateTimeTable(myHeaders, academic_hours) {
+    var DateNow = new Date();
+    
+    var formdata = new FormData();
+        formdata.append("year", DateNow.getFullYear());
+        formdata.append("academic_hours", academic_hours);
+
+    var requestOptions = {
+        method: 'POST',
+        headers: myHeaders,
+        body: formdata,
+        redirect: 'follow'
+    };
+
+    const response = await fetch(`${BASE_URL}timetable/`, requestOptions)
+    return response
+};
+
+
 export const fetchAddLearningDirections = createAsyncThunk(
-    'groups/fetchGroups',
-    async function(_, {rejectWithValue}) {
+    'learningDirections/fetchAddLearningDirections',
+    async function({name, courseDuration, academic_hours}, {rejectWithValue}) {
         try {
             const access_token = JSON.parse(localStorage.getItem('access_token'))
             // console.log('Токен в срезе группы:', access_token)
             // получаем инфу о текущем юзере
             var myHeaders = new Headers();
-            myHeaders.append("Authorization", `Bearer ${access_token}`);
+                myHeaders.append("Authorization", `Bearer ${access_token}`);
 
-            var formdata = new FormData();
-            formdata.append("name", num);
-            formdata.append("courseDuration", topic);
-            formdata.append("methodical_material", methodical);
+            const timeTable_response = CreateTimeTable(myHeaders, academic_hours)
 
-            var requestOptions = {
-            method: 'POST',
-            headers: myHeaders,
-            body: formdata,
-            redirect: 'follow'
-            };
-
-            const response = await fetch(`${BASE_URL}directions/`, requestOptions)
-            
-            if (!response.ok) {
+            if (!timeTable_response.ok) {
                 throw new Error('Server Error!');
             }
-    
-            const data = await response.json();
 
-            return data;
+            const timeTable_data = await timeTable_response.json();
+            console.log(timeTable_data)
+
+            // var formdata = new FormData();
+            //     formdata.append("name", name);
+            //     formdata.append("courseDuration", courseDuration);
+            //     formdata.append("timetable", timeTable_data.id);
+
+            // var requestOptions = {
+            //     method: 'POST',
+            //     headers: myHeaders,
+            //     body: formdata,
+            //     redirect: 'follow'
+            // };
+
+            // const response = await fetch(`${BASE_URL}directions/`, requestOptions)
+            
+            // if (!response.ok) {
+            //     throw new Error('Server Error!');
+            // }
+    
+            // const data = await response.json();
+
+            // return data;
         } catch (error) {
             return rejectWithValue(error.message);
         }

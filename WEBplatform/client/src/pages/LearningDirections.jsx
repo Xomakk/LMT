@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { updateToken } from "../store/authSlice";
-import { fetchLearningDirections } from "../store/learningDirectionsSlise";
+import { fetchLearningDirections, fetchAddLearningDirections } from "../store/learningDirectionsSlise";
 
 function LearningDirection ({learningDirection}) {
     return (
@@ -24,8 +24,10 @@ function LearningDirection ({learningDirection}) {
 function PopupAddLearningDirection ({changeFunc, isOpen}) {
     const dispatch = useDispatch();
 
-    const addDirection = () => {
-        dispatch()
+    const addDirection = (event) => {
+        event.preventDefault();
+        const form = event.target;
+        dispatch(fetchAddLearningDirections({name: form.name.value, courseDuration: form.courseDuration.value, academic_hours: form.academic_hours.value}))
     };
 
     return (

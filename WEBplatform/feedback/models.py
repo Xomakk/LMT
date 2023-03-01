@@ -9,7 +9,7 @@ class FeedbackParam(models.Model):
     learning_direction = models.ForeignKey(learningDirection, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{learningDirection} >> {self.name}'
+        return f'{self.learning_direction} >> {self.name}'
 
 
 class Feedback(models.Model):
