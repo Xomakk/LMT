@@ -1,7 +1,17 @@
 from rest_framework import serializers
-from groups.models import learningGroup, Attendance, LessonAttendance, LessonDays, StudentAttendanceStatus, \
-    CommentStatus
-from user.serializers import UserSerializer
+from groups.models import LearningGroup, LessonDays, Student, Lesson, StudentLessonStatus
+
+
+class StudentLessonStatusSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentLessonStatus
+        fields = '__all__'
+
+
+class LessonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = '__all__'
 
 
 class LessonDaysSerializer(serializers.ModelSerializer):
@@ -10,41 +20,17 @@ class LessonDaysSerializer(serializers.ModelSerializer):
         fields = ['day_number']
 
 
-class CommentStatusSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CommentStatus
-        fields = ['text', 'status']
-
-
-class StudentAttendanceStatusSerializer(serializers.ModelSerializer):
-    comment = CommentStatusSerializer()
+class LearningGroupSerializer(serializers.ModelSerializer):
+    days_of_lessons = LessonDaysSerializer(many=True)
 
     class Meta:
-        model = StudentAttendanceStatus
-        fields = ['student', 'status', 'comment']
-
-
-class LessonAttendanceSerializer(serializers.ModelSerializer):
-    students_list = StudentAttendanceStatusSerializer(many=True)
-
-    class Meta:
-        model = LessonAttendance
+        model = LearningGroup
         fields = '__all__'
 
 
-class AttendanceSerializer(serializers.ModelSerializer):
-    lessons_attendance_sheet = LessonAttendanceSerializer(many=True)
+class StudentSerializer(serializers.ModelSerializer):
+    learning_group = LearningGroupSerializer(many=True)
 
     class Meta:
-        model = Attendance
-        fields = '__all__'
-
-
-class groupSerializer(serializers.ModelSerializer):
-    students = UserSerializer(many=True)
-    attendance_sheet = AttendanceSerializer()
-    dayOfLessons = LessonDaysSerializer(many=True)
-
-    class Meta:
-        model = learningGroup
+        model = Student
         fields = '__all__'

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from learningDirections.models import learningDirection, timeTable, lesson
+from learningDirections.models import LearningDirection, Syllabus, Topic
 
-admin.site.register(learningDirection)
-admin.site.register(timeTable)
-admin.site.register(lesson)
+admin.site.register(LearningDirection)
+admin.site.register(Syllabus)
+admin.site.register(Topic)

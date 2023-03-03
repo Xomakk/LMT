@@ -37,24 +37,6 @@ class UsersListView(ListAPIView):
     permission_classes = [IsAuthenticated]
 
 
-class StudentsListView(ListAPIView):
-    queryset = User.objects.filter(is_student=True)
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class TeachersListView(ListAPIView):
-    queryset = User.objects.filter(is_teacher=True)
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-
-class ManagersListView(ListAPIView):
-    queryset = User.objects.filter(is_manager=True)
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-
 class UserDetailView(RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer

@@ -1,27 +1,46 @@
-from datetime import datetime
-
 from django.db import models
 
-from groups.models import learningGroup
 
-
-class lesson(models.Model):
-    number = models.IntegerField(default=0)
-    topic = models.CharField(max_length=256, default='Тема не задана')
-    methodical_material = models.CharField(max_length=512, default='Ссылка не задана')
-
-
-class timeTable(models.Model):
-    year = models.CharField(max_length=10, default=str(datetime.now().year))
-    academic_hours = models.IntegerField(default=1)
-    lessons = models.ManyToManyField(lesson, blank=True)
-
-
-class learningDirection(models.Model):
+# Направление обучения
+class LearningDirection(models.Model):
     name = models.CharField(max_length=50, default='Не указано')
-    courseDuration = models.IntegerField(default=1)
-    groups = models.ManyToManyField(learningGroup, blank=True, related_name='groups')
-    timetable = models.ForeignKey(timeTable, on_delete=models.PROTECT, null=True)
+    course_duration = models.IntegerField(default=1)
+
+    class Meta:
+        verbose_name = 'Направление обучения'
+        verbose_name_plural = 'Направления обучения'
+        ordering = ['-name']
 
     def __str__(self):
-        return self.name
+        return f'{self.name} | Длительность курса: {self.course_duration} год(а)'
+
+
+# программа обучения
+class Syllabus(models.Model):
+    year = models.DateField('Год', auto_now_add=True)
+    academic_hours = models.IntegerField(default=1)
+    learning_direction = models.ForeignKey(LearningDirection, on_delete=models.SET_NULL, null=True,
+                                           verbose_name='Направление обучения')
+
+    class Meta:
+        verbose_name = 'План обучения'
+        verbose_name_plural = 'Планы обучения по направлениям'
+
+    def __str__(self):
+        return f'{self.year} | {self.learning_direction.name}'
+
+
+# Тема в программе обучения
+class Topic(models.Model):
+    number = models.IntegerField('Номер урока', default=0)
+    name = models.CharField(max_length=256, default='Тема не задана')
+    methodical_material = models.CharField('Ссылка на метод. материал', max_length=1024, default='Ссылка не задана')
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.SET_NULL, null=True, verbose_name='Учебный план')
+
+    class Meta:
+        verbose_name = 'Тема урока'
+        verbose_name_plural = 'Темы уроков'
+        ordering = ['-syllabus', '-number']
+
+    def __str__(self):
+        return f'{self.syllabus.year} | {self.syllabus.learning_direction.name} | {self.name}'

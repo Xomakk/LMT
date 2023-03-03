@@ -9,8 +9,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'password2', 'name', 'lastname', 'patronymic', 'is_staff', 'is_manager',
-                  'is_teacher', 'is_student']
+        fields = ['email', 'password', 'password2', 'name', 'lastname', 'patronymic', 'is_staff', 'phone']
 
     def save(self, *args, **kwargs):
         user = User(
@@ -32,4 +31,4 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'name', 'lastname', 'patronymic', 'is_manager', 'is_teacher', 'is_student']
+        fields = ['id', 'email', 'name', 'lastname', 'patronymic',  'phone']

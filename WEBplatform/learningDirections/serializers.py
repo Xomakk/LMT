@@ -1,22 +1,21 @@
 from rest_framework import serializers
 
-from learningDirections.models import learningDirection, timeTable, lesson
+from learningDirections.models import LearningDirection, Syllabus, Topic
 
 
 class learningDirectionSerializer(serializers.ModelSerializer):
     class Meta:
-        model = learningDirection
+        model = LearningDirection
         fields = '__all__'
 
 
 class timeTableSerializer(serializers.ModelSerializer):
-    # lessons = lessonSerializer(many=True)
     class Meta:
-        model = timeTable
+        model = Syllabus
         fields = '__all__'
 
 
 class lessonSerializer(serializers.ModelSerializer):
     class Meta:
-        model = lesson
+        model = Topic
         fields = '__all__'
