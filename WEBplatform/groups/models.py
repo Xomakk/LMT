@@ -54,15 +54,22 @@ class Student(models.Model):
     patronymic = models.CharField('Отчество', max_length=255, default='Не указано', blank=True)
     email = models.EmailField('Email', unique=True, null=True, blank=True)
     phone = models.CharField('Телефон', max_length=15, null=True, blank=True)
+    birthday = models.DateField('День рождения')
     learning_group = models.ManyToManyField(LearningGroup, verbose_name='Учебные группы')
-
-    def __str__(self):
-        return f'{self.lastname} {self.name} {self.patronymic} [{" | ".join([group.name for group in self.learning_group.all()])}]'
 
     class Meta:
         verbose_name = 'Ученик'
         verbose_name_plural = 'Ученики'
         ordering = ['lastname', 'name', 'patronymic']
+
+    def __str__(self):
+        return f'{self.lastname} {self.name} {self.patronymic} [{" | ".join([group.name for group in self.learning_group.all()])}]'
+
+    def display_learning_group(self):
+        return ", ".join([group.name for group in self.learning_group.all()])
+
+    display_learning_group.short_description = 'Учебные группы'
+
 
 
 class Lesson(models.Model):

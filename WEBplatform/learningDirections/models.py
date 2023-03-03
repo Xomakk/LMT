@@ -1,10 +1,12 @@
+import datetime
+
 from django.db import models
 
 
 # Направление обучения
 class LearningDirection(models.Model):
-    name = models.CharField(max_length=50, default='Не указано')
-    course_duration = models.IntegerField(default=1)
+    name = models.CharField('Название', max_length=50, default='Не указано')
+    course_duration = models.IntegerField('Длительность курса (в годах)', default=1)
 
     class Meta:
         verbose_name = 'Направление обучения'
@@ -12,12 +14,12 @@ class LearningDirection(models.Model):
         ordering = ['-name']
 
     def __str__(self):
-        return f'{self.name} | Длительность курса: {self.course_duration} год(а)'
+        return f'{self.name} | Продолжительность: {self.course_duration} год(а)'
 
 
 # программа обучения
 class Syllabus(models.Model):
-    year = models.DateField('Год', auto_now_add=True)
+    year = models.IntegerField('Год', default=datetime.date.today().year)
     academic_hours = models.IntegerField(default=1)
     learning_direction = models.ForeignKey(LearningDirection, on_delete=models.SET_NULL, null=True,
                                            verbose_name='Направление обучения')
@@ -40,7 +42,7 @@ class Topic(models.Model):
     class Meta:
         verbose_name = 'Тема урока'
         verbose_name_plural = 'Темы уроков'
-        ordering = ['-syllabus', '-number']
+        ordering = ['syllabus', 'number']
 
     def __str__(self):
         return f'{self.syllabus.year} | {self.syllabus.learning_direction.name} | {self.name}'
