@@ -1,0 +1,38 @@
+.wrapper {
+    background-color: #545559;
+    padding: 11px 105px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.links {
+    display: grid;
+    grid-template-columns:  1fr 1fr 1fr;
+    column-gap: 100px;
+
+    .link {
+        color: #FFFFFF;
+        text-decoration: none;
+        transition-duration: 300ms;
+
+        &:hover { 
+            text-decoration: underline;
+        }
+    }
+}
+
+.massegers {
+    position: absolute;
+    display: flex;
+    gap: 11px;
+    right: 5vw;
+    
+    .icon {
+        transition-duration: 300ms;
+
+        &:hover {
+            transform: scale(105%);
+        }
+    }
+}

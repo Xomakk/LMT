@@ -3,43 +3,41 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from learningDirections.models import LearningDirection, Syllabus, Topic
-from learningDirections.serializers import learningDirectionSerializer, timeTableSerializer, lessonSerializer
+from learningDirections.serializers import LearningDirectionSerializer, SyllabusSerializer, TopicSerializer
 
 
-# LEARNING DIRECTION
 class LearningDirectionCreateView(ListCreateAPIView):
     queryset = LearningDirection.objects.all()
-    serializer_class = learningDirectionSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = LearningDirectionSerializer
+    # permission_classes = [IsAuthenticated]
 
 
 class LearningDirectionDetailView(RetrieveUpdateDestroyAPIView):
     queryset = LearningDirection.objects.all()
-    serializer_class = learningDirectionSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = LearningDirectionSerializer
+    # permission_classes = [IsAuthenticated]
 
 
 # TIME TABLE
-class TimetableCreateView(ListCreateAPIView):
+class SyllabusCreateView(ListCreateAPIView):
     queryset = Syllabus.objects.all()
-    serializer_class = timeTableSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = SyllabusSerializer
+    # permission_classes = [IsAuthenticated]
 
 
-class TimetableDetailView(RetrieveUpdateDestroyAPIView):
+class SyllabusDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Syllabus.objects.all()
-    serializer_class = timeTableSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = SyllabusSerializer
+    # permission_classes = [IsAuthenticated]
 
 
-# LESSON
-class LessonCreateView(ListCreateAPIView):
+class TopicCreateView(ListCreateAPIView):
     queryset = Topic.objects.all()
-    serializer_class = lessonSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = TopicSerializer
+    # permission_classes = [IsAuthenticated]
 
 
-class LessonDetailView(RetrieveUpdateDestroyAPIView):
+class TopicDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Topic.objects.all()
-    serializer_class = lessonSerializer
-    permission_classes = [IsAuthenticated]
+    serializer_class = TopicSerializer
+    # permission_classes = [IsAuthenticated]

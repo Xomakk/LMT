@@ -71,7 +71,6 @@ class Student(models.Model):
     display_learning_group.short_description = 'Учебные группы'
 
 
-
 class Lesson(models.Model):
     topic = models.ForeignKey(Topic, verbose_name='Тема', on_delete=models.SET_NULL, null=True)
     learning_group = models.ForeignKey(LearningGroup, verbose_name='Учебная группа', on_delete=models.SET_NULL,
@@ -107,5 +106,3 @@ class StudentLessonStatus(models.Model):
         verbose_name = 'Статус посещения урока'
         verbose_name_plural = 'Статистика посещения уроков'
         ordering = ['-lesson', '-student', '-status']
-
-# Урок
