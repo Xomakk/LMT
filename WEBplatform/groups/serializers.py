@@ -20,17 +20,29 @@ class LessonDaysSerializer(serializers.ModelSerializer):
         fields = ['day_number']
 
 
-class LearningGroupSerializer(serializers.ModelSerializer):
-    days_of_lessons = LessonDaysSerializer(many=True)
-
+class StudentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = LearningGroup
+        model = Student
         fields = '__all__'
 
 
-class StudentSerializer(serializers.ModelSerializer):
-    learning_group = LearningGroupSerializer(many=True)
-
+class StudentsDemoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
+        fields = ['id', 'name', 'lastname', 'patronymic']
+
+
+class LearningGroupDemoSerializer(serializers.ModelSerializer):
+    students = StudentsDemoSerializer(many=True, required=False, read_only=True)
+
+    class Meta:
+        model = LearningGroup
+        exclude = ['learning_direction']
+
+
+class LearningGroupSerializer(serializers.ModelSerializer):
+    students = StudentsDemoSerializer(many=True, required=False, read_only=True)
+
+    class Meta:
+        model = LearningGroup
         fields = '__all__'

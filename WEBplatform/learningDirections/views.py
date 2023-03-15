@@ -3,12 +3,13 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.permissions import IsAuthenticated
 
 from learningDirections.models import LearningDirection, Syllabus, Topic
-from learningDirections.serializers import LearningDirectionSerializer, SyllabusSerializer, TopicSerializer
+from learningDirections.serializers import LearningDirectionSerializer, SyllabusSerializer, TopicSerializer, \
+    AllLearningDirectionSerializer
 
 
 class LearningDirectionCreateView(ListCreateAPIView):
     queryset = LearningDirection.objects.all()
-    serializer_class = LearningDirectionSerializer
+    serializer_class = AllLearningDirectionSerializer
     # permission_classes = [IsAuthenticated]
 
 

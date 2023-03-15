@@ -11,7 +11,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Avatar } from '@mui/material';
+import { Avatar, Link } from '@mui/material';
 
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -81,11 +81,11 @@ const AppBar = styled(MuiAppBar, {
 
 const mainListItems = (
   <React.Fragment>
-    <ListItemButton>
+    <ListItemButton href={'/'}>
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>
-      <ListItemText primary="Dashboard" />
+      <ListItemText primary="Курсы"/>
     </ListItemButton>
     <ListItemButton>
       <ListItemIcon>
@@ -225,7 +225,7 @@ export default function Header({ body }) {
                 <Toolbar sx={{
                     pr: '24px', // keep right padding when drawer closed
                     }}>
-                <IconButton
+                  <IconButton
                     edge="start"
                     color="inherit"
                     aria-label="open drawer"
@@ -236,54 +236,54 @@ export default function Header({ body }) {
                     }}
                     >
                     <MenuIcon />
-                    </IconButton>
-                <Typography
-                    component="h1"
-                    variant="h6"
-                    color="inherit"
-                    noWrap
-                    sx={{ flexGrow: 1 }}
-                >
-                    LMT
-                </Typography>
-                
-                <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                    {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                    <Badge badgeContent={22} color="error">
-                        <MailIcon />
-                    </Badge>
-                    </IconButton> */}
-                    <IconButton
-                    size="large"
-                    aria-label="show 17 new notifications"
-                    color="inherit"
-                    >
-                    <Badge badgeContent={17} color="error">
-                        <NotificationsIcon />
-                    </Badge>
-                    </IconButton>
-                    <IconButton
-                    edge="end"
-                    aria-label="account of current user"
-                    aria-controls={menuId}
-                    onClick={handleProfileMenuOpen}
-                    color="inherit"
-                    >
-                    <Avatar alt='' src="#" />
-                    </IconButton>
-                </Box>
-                <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                        <IconButton
-                        size="large"
-                        aria-label="show more"
-                        aria-controls={mobileMenuId}
-                        aria-haspopup="true"
-                        onClick={handleMobileMenuOpen}
+                  </IconButton>
+                  <Link href='/' sx={{ flexGrow: 1 }} color="inherit" underline='none'>
+                    <Typography
+                        component="h1"
+                        variant="h6"
                         color="inherit"
-                        >
-                    <MoreIcon />
-                    </IconButton>
-                </Box>
+                        noWrap
+                    >
+                        LMT
+                    </Typography>
+                  </Link>
+                  <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                      {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                      <Badge badgeContent={22} color="error">
+                          <MailIcon />
+                      </Badge>
+                      </IconButton> */}
+                      <IconButton
+                      size="large"
+                      aria-label="show 17 new notifications"
+                      color="inherit"
+                      >
+                      <Badge badgeContent={17} color="error">
+                          <NotificationsIcon />
+                      </Badge>
+                      </IconButton>
+                      <IconButton
+                      edge="end"
+                      aria-label="account of current user"
+                      aria-controls={menuId}
+                      onClick={handleProfileMenuOpen}
+                      color="inherit"
+                      >
+                      <Avatar alt='' src="#" />
+                      </IconButton>
+                  </Box>
+                  <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                          <IconButton
+                          size="large"
+                          aria-label="show more"
+                          aria-controls={mobileMenuId}
+                          aria-haspopup="true"
+                          onClick={handleMobileMenuOpen}
+                          color="inherit"
+                          >
+                      <MoreIcon />
+                      </IconButton>
+                  </Box>
                 </Toolbar>
             </AppBar>
             {renderMobileMenu}

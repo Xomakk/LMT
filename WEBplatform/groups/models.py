@@ -26,7 +26,7 @@ class LessonDays(models.Model):
 
 class LearningGroup(models.Model):
     learning_direction = models.ForeignKey(LearningDirection, on_delete=models.SET_NULL, null=True,
-                                           verbose_name='Направление обучения')
+                                           verbose_name='Направление обучения', related_name='learning_groups')
     name = models.CharField('Название', max_length=50)
     study_year = models.IntegerField('Год обучения', default=1)
     address = models.CharField('Адресс занятий', max_length=200, blank=True)
@@ -55,7 +55,7 @@ class Student(models.Model):
     email = models.EmailField('Email', unique=True, null=True, blank=True)
     phone = models.CharField('Телефон', max_length=15, null=True, blank=True)
     birthday = models.DateField('День рождения')
-    learning_group = models.ManyToManyField(LearningGroup, verbose_name='Учебные группы')
+    learning_group = models.ManyToManyField(LearningGroup, verbose_name='Учебные группы', related_name='students')
 
     class Meta:
         verbose_name = 'Ученик'
