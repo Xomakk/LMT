@@ -14,6 +14,7 @@ import { getCookie } from '@/utils/functions';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { CourseDialog, DeleteDialog, GroupDialog, TopicDialog } from './dialogs';
+import { useRouter } from 'next/router';
 
 
 export const getServerSideProps = async (context) => {
@@ -169,6 +170,42 @@ const Course = ({ data, id }) => {
         updateCourse();
         handleCloseEditCourseDialog();
     };
+
+    // удаление курса
+    const [courseDeleteDeleteDialog, setCourseDeleteDialog] = React.useState(false)
+    const router = useRouter();
+
+    const handleClickOpenCourseDeleteDialog = (id) => {
+        setCourseDeleteDialog(true);
+    };
+
+    const handleCloseCourseDeleteDialog = () => {
+        setCourseDeleteDialog(false);
+    };
+
+    const handleAgreeDeleteCourse = () => {
+        handleCloseCourseDeleteDialog();
+        handleDeleteCourse();
+    }
+
+    const handleDeleteCourse = async () => {
+        var myHeaders = new Headers();
+            myHeaders.append("Cookie", getCookie("csrftoken"));
+
+        var requestOptions = {
+                method: 'DELETE',
+                headers: myHeaders,
+                redirect: 'follow'
+            };
+
+        const response = await fetch(`${endpoint}/directions/${id}/`, requestOptions)
+
+        if (!response.ok) {
+                throw new Error('Ошибка удаления курса. RESPONSE ERROR');
+            }
+        
+        router.push('/')
+    }
 
 
     // ------------------------------- Редактирование учебного плана ------------------------------------- //
@@ -333,21 +370,29 @@ const Course = ({ data, id }) => {
                 >
                     {course.name}
                 </Typography>
-                <IconButton size="small" onClick={handleClickOpenEditCourseDialog}>
-                    <EditIcon />
-                </IconButton>
+                <ButtonGroup>
+                    <IconButton size="small" onClick={handleClickOpenEditCourseDialog}>
+                        <EditIcon />
+                    </IconButton>
+                    <IconButton size="small" onClick={handleClickOpenCourseDeleteDialog}>
+                        <DeleteIcon />
+                    </IconButton>
+                </ButtonGroup>
             </Stack>
             <Grid container spacing={2}>
                 <Grid item xs={12} lg={6}>
                     <TableContainer component={Paper} sx={{p: 3}}>
-                        <Typography sx={{mb: 1}}>
+                        <Typography variant="subtitle1" sx={{mb: 1}}>
                             Общее количество занятий: <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.topics.length}</Typography>
                         </Typography>
-                        <Typography sx={{mb: 3}}>
+                        <Typography variant="subtitle1" sx={{mb: 1}}>
+                            Длительность одного занятия (часов): <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.academic_hours} </Typography>
+                        </Typography>
+                        <Typography variant="subtitle1" sx={{mb: 3}}>
                             Всего часов обучения: <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.topics.length * syllabus.academic_hours}</Typography>
                         </Typography>
                         <Typography noWrap component="h1" variant="h5"  sx={{mb: 1}}>
-                                План занятий ({syllabus.year}):
+                                План занятий ({syllabus && syllabus.year}):
                         </Typography>
                         <Table>
                             <TableBody>
@@ -377,21 +422,21 @@ const Course = ({ data, id }) => {
                                 ))}
                             </TableBody>
                         </Table>
-                        <Card sx={{mt: 2}}>
-                            <CardActionArea sx={{p: 0.5, backgroundColor: '#efefef'}} onClick={handleClickOpenTopicDialog}>
-                                <Box display='flex' justifyContent="center" alignItems="center" gap={1}>
-                                    <Image src={addImage} 
-                                        alt="Python"
-                                        loading="lazy"
-                                        width={20}
-                                        height={20}
-                                    />
-                                    <Typography  variant="subtitle1" component="p">
-                                        Добавить тему
-                                    </Typography>
-                                </Box>
-                            </CardActionArea>
-                        </Card>
+                            <Card sx={{mt: 2}}>
+                                <CardActionArea sx={{p: 0.5, backgroundColor: '#efefef'}} onClick={handleClickOpenTopicDialog}>
+                                    <Box display='flex' justifyContent="center" alignItems="center" gap={1}>
+                                        <Image src={addImage} 
+                                            alt="Python"
+                                            loading="lazy"
+                                            width={20}
+                                            height={20}
+                                        />
+                                        <Typography  variant="subtitle1" component="p">
+                                            Добавить тему
+                                        </Typography>
+                                    </Box>
+                                </CardActionArea>
+                            </Card>
                     </TableContainer>
                 </Grid>
                 <Grid item xs={12}  lg={6}>
@@ -512,6 +557,11 @@ const Course = ({ data, id }) => {
                 status={topicDeleteDeleteDialog} 
                 handleClose={handleCloseTopicDeleteDialog} 
                 handleAgree={handleAgree}
+            />
+            <DeleteDialog 
+                status={courseDeleteDeleteDialog} 
+                handleClose={handleCloseCourseDeleteDialog} 
+                handleAgree={handleAgreeDeleteCourse}
             />
         </Container>
     )
