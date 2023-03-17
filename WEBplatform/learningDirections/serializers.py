@@ -17,7 +17,7 @@ class TopicSerializer(serializers.ModelSerializer):
 
 
 class SyllabusSerializer(serializers.ModelSerializer):
-    topics = TopicSerializer(many=True)
+    topics = TopicSerializer(many=True, required=False)
 
     class Meta:
         model = Syllabus

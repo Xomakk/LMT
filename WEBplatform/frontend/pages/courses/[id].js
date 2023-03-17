@@ -16,6 +16,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { CourseDialog, DeleteDialog, GroupDialog, TopicDialog } from './dialogs';
 import { useRouter } from 'next/router';
 
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+
 
 export const getServerSideProps = async (context) => {
     const { id } = context.params;
@@ -53,7 +59,7 @@ const Course = ({ data, id }) => {
         setCourse(data);
     }
 
-    // ------------------------------- Редактироване групп ----------------------------------------------- //
+    // ------------------------------- Добавление групп -------------------------------------------------- //
     const [openAddGroupDialog, setOpenAddGroupDialog] = React.useState(false);
 
     const [daysOfLessons, setDaysOfLessons] = React.useState([])
@@ -299,7 +305,7 @@ const Course = ({ data, id }) => {
     }
 
     // изменение темы
-    const [openTopicEdit, setOpenTopicEdit] = React.useState();
+    const [openTopicEdit, setOpenTopicEdit] = React.useState(false);
     const [idTopicEdit, setIdTopicEdit] = React.useState();
 
     const [topicNumberEdit, setTopicNumberEdit] = React.useState('')
@@ -350,6 +356,44 @@ const Course = ({ data, id }) => {
         updateCourse();
     }
 
+    // изменение длительности занятия
+    const [openSyllabusEdit, setOpenSyllabusEdit] = React.useState()
+    const [academicHours, setAcademicHours] = React.useState(syllabus && syllabus.academic_hours)
+
+
+    const handleClickOpenSyllabusEdit = () => {
+        setOpenSyllabusEdit(true);
+    };
+
+    const handleCloseSyllabusEdit = () => {
+        setOpenSyllabusEdit(false);
+    };
+
+    const handleSyllabusEdit = async () => {
+        var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Cookie", getCookie("csrftoken"));
+
+        var raw = JSON.stringify({
+                "academic_hours": Number(academicHours)
+            });
+
+        var requestOptions = {
+                method: 'PUT',
+                headers: myHeaders,
+                body: raw,
+                redirect: 'follow'
+            };
+
+        const response = await fetch(`${endpoint}/syllabuses/${syllabus && syllabus.id}/`, requestOptions)
+
+        if (!response.ok) {
+                throw new Error('Ошибка изменения учебного плана. RESPONSE ERROR');
+            }
+
+        handleCloseSyllabusEdit();
+        updateCourse();
+    }
 
 
     // ------------------------------- Рендер страницы --------------------------------------------------- //
@@ -385,9 +429,14 @@ const Course = ({ data, id }) => {
                         <Typography variant="subtitle1" sx={{mb: 1}}>
                             Общее количество занятий: <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.topics.length}</Typography>
                         </Typography>
-                        <Typography variant="subtitle1" sx={{mb: 1}}>
-                            Длительность одного занятия (часов): <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.academic_hours} </Typography>
-                        </Typography>
+                        <Box display='flex' alignItems='center' gap={1}>
+                            <Typography variant="subtitle1" sx={{mb: 1}}>
+                                Длительность одного занятия (часов): <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.academic_hours} </Typography>
+                            </Typography>
+                            <IconButton aria-label="edit" size="small" onClick={handleClickOpenSyllabusEdit}>
+                                <EditIcon/>
+                            </IconButton>
+                        </Box>
                         <Typography variant="subtitle1" sx={{mb: 3}}>
                             Всего часов обучения: <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.topics.length * syllabus.academic_hours}</Typography>
                         </Typography>
@@ -410,7 +459,7 @@ const Course = ({ data, id }) => {
                                                 </Typography>
                                             </Link>
                                             <ButtonGroup>
-                                                <IconButton aria-label="delete" size="small" onClick={() => {handleOpenTopicEdit(topic)}}>
+                                                <IconButton aria-label="edit" size="small" onClick={() => {handleOpenTopicEdit(topic)}}>
                                                     <EditIcon/>
                                                 </IconButton>
                                                 <IconButton aria-label="delete" size="small" onClick={() => {handleClickOpenTopicDeleteDialog(topic.id)}}>
@@ -443,7 +492,7 @@ const Course = ({ data, id }) => {
                     <Grid container spacing={2}>
                         {course && course.learning_groups.map((group) => (
                             <Grid item lg={4} key={group.id}>
-                                <Link underline='none' href={`/groups/${group}`}>
+                                <Link underline='none' href={`/groups/${group.id}`}>
                                     <Card>
                                         <CardActionArea sx={{ p: 2}}>
                                             <Box display='flex' alignItems='center' gap={2}>
@@ -553,6 +602,7 @@ const Course = ({ data, id }) => {
                     }
                 }
             />
+
             <DeleteDialog 
                 status={topicDeleteDeleteDialog} 
                 handleClose={handleCloseTopicDeleteDialog} 
@@ -563,6 +613,25 @@ const Course = ({ data, id }) => {
                 handleClose={handleCloseCourseDeleteDialog} 
                 handleAgree={handleAgreeDeleteCourse}
             />
+            <Dialog open={openSyllabusEdit} onClose={handleCloseSyllabusEdit}>
+            <DialogTitle>Редактирование учебного плана</DialogTitle>
+            <DialogContent>
+                <TextField
+                    autoFocus
+                    margin="dense"
+                    label="Длительность занятия"
+                    type="number"
+                    fullWidth
+                    variant="standard"
+                    value={academicHours}
+                    onChange={(e) => setAcademicHours(e.target.value)}
+                />
+            </DialogContent>
+            <DialogActions>
+                <Button onClick={handleCloseSyllabusEdit}>Закрыть</Button>
+                <Button onClick={handleSyllabusEdit}>Отправить</Button>
+            </DialogActions>
+        </Dialog>
         </Container>
     )
 }

@@ -26,7 +26,7 @@ SECRET_KEY = "django-insecure-+2pfjo)9xk#(-%1w%61ns^=_0*f$6-a2lt5omhdjp)i8@1c$ib
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['.vercel.app']
+ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'user.User'
 
@@ -89,14 +89,14 @@ WSGI_APPLICATION = "WEBplatform.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    # "default": {
-    #     "ENGINE": "django.db.backends.postgresql",
-    #     "NAME": 'LMT',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'admin',
-    #     'HOST': 'localhost',
-    #     'PORT': '5432',
-    # }
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": 'LMT',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
 # Password validation
