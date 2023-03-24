@@ -4,7 +4,7 @@ from groups.models import LearningGroup
 from learningDirections.models import LearningDirection, Syllabus, Topic
 
 
-class AllLearningDirectionSerializer(serializers.ModelSerializer):
+class LearningDirectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = LearningDirection
         fields = '__all__'
@@ -44,7 +44,7 @@ class LearningGroupSmallSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-class LearningDirectionSerializer(serializers.ModelSerializer):
+class LearningDirectionDemoSerializer(serializers.ModelSerializer):
     learning_groups = LearningGroupSmallSerializer(many=True, required=False)
     syllabuses = SyllabusSmallSerializer(many=True, required=False)
 

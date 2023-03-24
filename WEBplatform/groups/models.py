@@ -54,8 +54,8 @@ class Student(models.Model):
     patronymic = models.CharField('Отчество', max_length=255, default='Не указано', blank=True)
     email = models.EmailField('Email', unique=True, null=True, blank=True)
     phone = models.CharField('Телефон', max_length=15, null=True, blank=True)
-    birthday = models.DateField('День рождения')
-    learning_group = models.ManyToManyField(LearningGroup, verbose_name='Учебные группы', related_name='students')
+    birthday = models.DateField('День рождения', null=True, blank=True)
+    learning_group = models.ManyToManyField(LearningGroup, blank=True, verbose_name='Учебные группы', related_name='students')
 
     class Meta:
         verbose_name = 'Ученик'
@@ -94,7 +94,7 @@ class StudentAttendanceStatusValues(models.IntegerChoices):
 
 # таблица соответствия учник-статус (был \ не был \ не был по уважительной причине) для урока
 class StudentLessonStatus(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, verbose_name='Урок')
+    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, verbose_name='Урок', related_name='student_lesson_status')
     student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, verbose_name='Ученик')
     status = models.SmallIntegerField('Статус', choices=StudentAttendanceStatusValues.choices, default=10)
     comment = models.CharField('Комментарий', blank=True, null=True, max_length=512)
@@ -105,4 +105,4 @@ class StudentLessonStatus(models.Model):
     class Meta:
         verbose_name = 'Статус посещения урока'
         verbose_name_plural = 'Статистика посещения уроков'
-        ordering = ['-lesson', '-student', '-status']
+        ordering = ['lesson']

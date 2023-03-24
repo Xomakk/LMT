@@ -18,7 +18,7 @@ const Footer = () => {
             <div className={style.wrapper}>
                 <div className={style.links}>
                     {links.map(({label, link}) => (
-                        <Link href={link} className={style.link}>
+                        <Link key={label} href={link} className={style.link}>
                             {label}
                         </Link>
                     ))}

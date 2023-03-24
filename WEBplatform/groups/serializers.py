@@ -5,13 +5,14 @@ from groups.models import LearningGroup, LessonDays, Student, Lesson, StudentLes
 class StudentLessonStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = StudentLessonStatus
-        fields = '__all__'
+        exclude = ['lesson', 'id']
 
 
 class LessonSerializer(serializers.ModelSerializer):
+    student_lesson_status = StudentLessonStatusSerializer(many=True, required=False, read_only=True)
     class Meta:
         model = Lesson
-        fields = '__all__'
+        exclude = ['learning_group']
 
 
 class LessonDaysSerializer(serializers.ModelSerializer):

@@ -73,10 +73,10 @@ const Course = ({ data, id }) => {
 
 
     const handleClickOpenAddGroupDialog = async () => {
-        const newResponse = await fetch(`${endpoint}/profiles/`);
-        const data = await newResponse.json();
+        const response = await fetch(`${endpoint}/profiles/`);
+        const data = await response.json();
 
-        if (!newResponse.ok) {
+        if (!response.ok) {
             throw new Error('Ошибка получения списка преподавателей. RESPONSE ERROR');
         }
         setTeachers(data);
@@ -257,6 +257,10 @@ const Course = ({ data, id }) => {
                 throw new Error('Ошибка добавления темы. RESPONSE ERROR');
             }
 
+        setTopicNumber('');
+        setTopicName('');
+        setTopicMethodicalMaterial('');
+
         handleCloseTopicDialog();
         updateCourse();
     }
@@ -357,7 +361,7 @@ const Course = ({ data, id }) => {
     }
 
     // изменение длительности занятия
-    const [openSyllabusEdit, setOpenSyllabusEdit] = React.useState()
+    const [openSyllabusEdit, setOpenSyllabusEdit] = React.useState(false)
     const [academicHours, setAcademicHours] = React.useState(syllabus && syllabus.academic_hours)
 
 
@@ -501,7 +505,6 @@ const Course = ({ data, id }) => {
                                                     loading="lazy"
                                                     width={32}
                                                     height={32}
-                                                    placeholder='blur'
                                                 />
                                                 <Typography  variant="h6" component="p">
                                                     {group.name}

@@ -21,12 +21,11 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { AddStudentsDialog } from './lessons/dialogs';
+import { AddStudentsDialog } from './dialogs';
 import { DeleteDialog, GroupDialog } from '../courses/dialogs';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { green } from '@mui/material/colors';
 import MessageIcon from '@mui/icons-material/Message';
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 
 export const getServerSideProps = async (context) => {
     const { id } = context.params;
@@ -337,57 +336,143 @@ const Group = ({ data, id }) => {
                 </ButtonGroup>
             </Stack>
 
-            <Grid item>
-                <Grid container spacing={3}>
-                    {syllabus && syllabus.topics.map( (topic) => (
-                        <Grid item lg={12} key={topic.id}>
-                            <Link underline='none' href={`/groups/${id}/lesson/`}>
-                                <Card>
-                                    <CardActionArea sx={{ p: 2}}>
-                                        <Box display='flex' alignItems='center' gap={2}>
-                                            <DoubleArrowIcon fontSize='large'/>
-                                            <Typography  variant="h6" component="p">
-                                                <b>Урок №{topic.number}</b> {topic.name}
-                                            </Typography>
-                                        </Box>
-                                    </CardActionArea>
-                                </Card>
-                            </Link>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Grid>
-            
-            <GroupDialog 
-                status={openEditGroupDialog} 
-                handleClose={handleCloseEditGroupDialog} 
-                updateData={handleEditGroup}
-                params={
-                    {
-                        daysOfLessons: daysOfLessons,
-                        setDaysOfLessons: setDaysOfLessons,
-                        groupName: groupName,
-                        setGroupName: setGroupName,
-                        studyYear: studyYear,
-                        setStudyYear: setStudyYear,
-                        address: address,
-                        setAddress: setAddress,
-                        dateFirstLesson: dateFirstLesson,
-                        setDateFirstLesson: setDateFirstLesson,
-                        timeLesson: timeLesson,
-                        setTimeLesson: setTimeLesson,
-                        teachers: teachers,
-                        setTeachers: setTeachers,
-                        teacher: teacher,
-                        setTeacher: setTeacher
-                    }
+            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+                <TableContainer>
+                    <Table aria-label="sticky table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell
+                                align='center'
+                                sx={{position: 'sticky', 
+                                     zIndex: 1,  
+                                     left: 0, 
+                                     minWidth: 300, 
+                                     borderRight: '2px solid rgba(224, 224, 224, 1)',
+                                     backgroundColor: '#ffffff'
+                                    }}
+                                >
+                                    <Typography variant="subtitle1">Ученики</Typography>
+                            </TableCell>
+                            
+                            {syllabus && syllabus.topics.map((topic) => (
+                                <TableCell align={'center'} key={topic.id} sx={{position: 'sticky', 
+                                                             borderRight: '2px solid rgba(224, 224, 224, 1)', 
+                                                             left: 0,
+                                                             minWidth: 200,
+                                                             verticalAlign: 'top'
+                                                             }}>
+                                    <Typography variant="subtitle1" fontWeight={'bold'}>Урок №{topic.number}. </Typography>
+                                    <Typography variant="subtitle2">
+                                        <Link underline='none' title={topic.name} target="_blank" href={topic.methodical_material}>
+                                            {topic.name.slice(0, topic.name.indexOf(' ', topic.name.indexOf(' ') + 1))}...
+                                        </Link>
+                                    </Typography>
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {group && group.students
+                        .map((student) => {
+                            return (
+                            <TableRow hover role="checkbox" tabIndex={-1} key={student.id}>
+                                <TableCell align='left' sx={{position: 'sticky', 
+                                                             borderRight: '2px solid rgba(224, 224, 224, 1)', 
+                                                             zIndex: 1, 
+                                                             left: 0,
+                                                             backgroundColor: '#ffffff'
+                                                             }}>
+                                    <Typography variant="subtitle1" fontWeight='bold'>
+                                        {student.lastname} {student.name}
+                                    </Typography>
+                                </TableCell>
+                                { syllabus && syllabus.topics.map( (topic) => {
+                                return (
+                                <TableCell key={topic.id} align='center' sx={{position: 'sticky', 
+                                                             borderRight: '2px solid rgba(224, 224, 224, 1)', 
+                                                             left: 0
+                                                             }}>
+                                        <ButtonGroup>
+                                            <Checkbox
+                                                icon={icon}
+                                                checkedIcon={checkedIcon}
+                                                style={{
+                                                        color: green[500],
+                                                        '&.MuiChecked': {
+                                                            color: green[300],
+                                                        },
+                                                }}
+                                                onChange={(event) => {handleStudentAttendance({student_id: student.id, topic_id: topic.id, status: event.target.checked})}}
+                                                checked={lessons && lessons.filter((lesson) => lesson.topic === topic.id)[0]?.student_lesson_status.filter((item) => item.student === student.id)[0]?.status === 20 ? true : false}
+                                                color="success"
+                                                sx={{ '& .MuiSvgIcon-root': { fontSize: 24 } }}
+                                            />
+                                            <IconButton>
+                                                <MessageIcon />
+                                            </IconButton>
+                                        </ButtonGroup>
+                                </TableCell>
+                            )})}
+                            </TableRow>
+                            );
+                        })}
+                    </TableBody>
+                    </Table>
+                </TableContainer>
+            </Paper>
+
+            <Card sx={{mt: 3, width: '300px'}}>
+                <CardActionArea sx={{p: 0.5, backgroundColor: '#efefef'}} onClick={handleOpenAddStudentsDialog}>
+                    <Box display='flex' justifyContent="center" alignItems="center" gap={1}>
+                        <Image src={addImage} 
+                            alt="Python"
+                            loading="lazy"
+                            width={20}
+                            height={20}
+                        />
+                        <Typography  variant="subtitle1" component="p">
+                            Добавить учеников
+                        </Typography>
+                    </Box>
+                </CardActionArea>
+            </Card>
+
+            <AddStudentsDialog 
+                status={openAddStudentsDialog} 
+                handleClose={handleCloseAddStudentsDialog} 
+                updateData={UpdateGroup}
+                group={group}
+            />
+        <GroupDialog 
+            status={openEditGroupDialog} 
+            handleClose={handleCloseEditGroupDialog} 
+            updateData={handleEditGroup}
+            params={
+                {
+                    daysOfLessons: daysOfLessons,
+                    setDaysOfLessons: setDaysOfLessons,
+                    groupName: groupName,
+                    setGroupName: setGroupName,
+                    studyYear: studyYear,
+                    setStudyYear: setStudyYear,
+                    address: address,
+                    setAddress: setAddress,
+                    dateFirstLesson: dateFirstLesson,
+                    setDateFirstLesson: setDateFirstLesson,
+                    timeLesson: timeLesson,
+                    setTimeLesson: setTimeLesson,
+                    teachers: teachers,
+                    setTeachers: setTeachers,
+                    teacher: teacher,
+                    setTeacher: setTeacher
                 }
-            />
-            <DeleteDialog 
-                status={groupDeleteDeleteDialog} 
-                handleClose={handleCloseGroupDeleteDialog} 
-                handleAgree={handleAgreeDeleteGroup}
-            />
+            }
+        />
+        <DeleteDialog 
+            status={groupDeleteDeleteDialog} 
+            handleClose={handleCloseGroupDeleteDialog} 
+            handleAgree={handleAgreeDeleteGroup}
+        />
         </Container>
     )
 }
