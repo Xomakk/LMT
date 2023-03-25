@@ -46,8 +46,8 @@ class LearningGroupSmallSerializer(serializers.ModelSerializer):
 
 class LearningDirectionDemoSerializer(serializers.ModelSerializer):
     learning_groups = LearningGroupSmallSerializer(many=True, required=False)
-    syllabuses = SyllabusSmallSerializer(many=True, required=False)
+    syllabus = SyllabusSmallSerializer(required=False)
 
     class Meta:
         model = LearningDirection
-        fields = ['name', 'course_duration', 'learning_groups', 'syllabuses']
+        fields = ['name', 'course_duration', 'learning_groups', 'syllabus']

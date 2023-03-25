@@ -25,6 +25,15 @@ def get_lesson_date(lesson_number, group):
     return sorted(dates)
 
 
+def create_lesson(topic, group):
+    lesson = Lesson.objects.create(
+        topic=topic,
+        learning_group=group,
+        lesson_date=get_lesson_date(topic.number, group)[topic.number - 1]
+    )
+    return lesson
+
+
 # при создании занятия в плане обучения
 @receiver(post_save, sender=Topic)
 def post_save_topic(created, instance, **kwargs):
@@ -33,19 +42,7 @@ def post_save_topic(created, instance, **kwargs):
         learning_direction = syllabus.learning_direction
         groups = learning_direction.learning_groups.all()
         for group in groups:
-            lesson = Lesson.objects.create(
-                topic=instance,
-                learning_group=group,
-                lesson_date=get_lesson_date(instance.number, group)[instance.number - 1]
-            )
-
-
-@receiver(post_save, sender=LearningGroup)
-def post_save_group(created, instance, **kwargs):
-    if created:
-        learning_direction = instance.learning_direction
-        syllabus = learning_direction.syllabuses.all()
-
+            create_lesson(instance, group)
 
     # # при создании урока создаются статусы для всех учеников
 # @receiver(post_save, sender=Lesson)

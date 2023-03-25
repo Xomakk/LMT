@@ -25,7 +25,7 @@ class LessonDays(models.Model):
 
 
 class LearningGroup(models.Model):
-    learning_direction = models.ForeignKey(LearningDirection, on_delete=models.SET_NULL, null=True,
+    learning_direction = models.ForeignKey(LearningDirection, on_delete=models.CASCADE, null=True,
                                            verbose_name='Направление обучения', related_name='learning_groups')
     name = models.CharField('Название', max_length=50)
     study_year = models.IntegerField('Год обучения', default=1)
@@ -72,8 +72,8 @@ class Student(models.Model):
 
 
 class Lesson(models.Model):
-    topic = models.ForeignKey(Topic, verbose_name='Тема', on_delete=models.SET_NULL, null=True)
-    learning_group = models.ForeignKey(LearningGroup, verbose_name='Учебная группа', on_delete=models.SET_NULL,
+    topic = models.ForeignKey(Topic, verbose_name='Тема', on_delete=models.CASCADE, null=True)
+    learning_group = models.ForeignKey(LearningGroup, verbose_name='Учебная группа', on_delete=models.CASCADE,
                                        null=True)
     lesson_date = models.DateField('Дата урока')
 
@@ -94,8 +94,8 @@ class StudentAttendanceStatusValues(models.IntegerChoices):
 
 # таблица соответствия учник-статус (был \ не был \ не был по уважительной причине) для урока
 class StudentLessonStatus(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.SET_NULL, null=True, verbose_name='Урок', related_name='student_lesson_status')
-    student = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, verbose_name='Ученик')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, verbose_name='Урок', related_name='student_lesson_status')
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, verbose_name='Ученик')
     status = models.SmallIntegerField('Статус', choices=StudentAttendanceStatusValues.choices, default=10)
     comment = models.CharField('Комментарий', blank=True, null=True, max_length=512)
 

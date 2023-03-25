@@ -4,11 +4,11 @@ import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 
 import * as React from 'react';
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/joy/Typography';
 import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, Link, FormGroup, FormControlLabel, Checkbox, Stack, Button, IconButton, ButtonGroup} from '@mui/material';
 import Image from 'next/image';
-import courseImage from '../../public/courses/Python.jpg'
-import addImage from '../../public/add.svg'
+import courseImage from '@/public/courses/Python.jpg'
+import addImage from '@/public/add.svg'
 import { getCookie } from '@/utils/functions';
 
 import EditIcon from '@mui/icons-material/Edit';
@@ -44,9 +44,7 @@ export const getServerSideProps = async (context) => {
 
 const Course = ({ data, id }) => {
     const [course, setCourse] = React.useState(data)
-
-    // временно берем только самый новый учебный план
-    const syllabus = course.syllabuses.sort((prev, next) => prev.year - next.year)[0]
+    const [syllabus, setSyllabus] = React.useState(data.syllabus)
 
     // обновление курса после внесения изменений
     const updateCourse = async () => {
@@ -57,6 +55,7 @@ const Course = ({ data, id }) => {
             throw new Error('Ошибка обновления курса. RESPONSE ERROR');
         }
         setCourse(data);
+        setSyllabus(data.syllabus);
     }
 
     // ------------------------------- Добавление групп -------------------------------------------------- //
@@ -103,6 +102,8 @@ const Course = ({ data, id }) => {
                 "teacher": teacher,
                 "days_of_lessons": daysOfLessons.map((num) => Number(num))
             });
+
+            console.log(daysOfLessons.map((num) => Number(num)))
 
             var requestOptions = {
                 method: 'POST',
@@ -408,11 +409,10 @@ const Course = ({ data, id }) => {
                 justifyContent="flex-start"
                 alignItems="center"
                 spacing={1}
-                sx={{pl: 3, mb: 2}}
+                sx={{pl: 3, mb: 4}}
             >
                 <Typography
-                    component="h1"
-                    variant="h3"
+                    level="h2"
                     color="inherit"
                     noWrap
                 >
@@ -430,21 +430,21 @@ const Course = ({ data, id }) => {
             <Grid container spacing={2}>
                 <Grid item xs={12} lg={6}>
                     <TableContainer component={Paper} sx={{p: 3}}>
-                        <Typography variant="subtitle1" sx={{mb: 1}}>
-                            Общее количество занятий: <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.topics.length}</Typography>
+                        <Typography level="body1" sx={{mb: 1}}>
+                            Общее количество занятий: <Typography component='span' display='inline-block' color='primary'>{syllabus && syllabus.topics.length}</Typography>
                         </Typography>
                         <Box display='flex' alignItems='center' gap={1}>
-                            <Typography variant="subtitle1" sx={{mb: 1}}>
-                                Длительность одного занятия (часов): <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.academic_hours} </Typography>
+                            <Typography level="body1" sx={{mb: 1}}>
+                                Длительность одного занятия (часов): <Typography component='span' display='inline-block' color='primary'>{syllabus && syllabus.academic_hours} </Typography>
                             </Typography>
                             <IconButton aria-label="edit" size="small" onClick={handleClickOpenSyllabusEdit}>
                                 <EditIcon/>
                             </IconButton>
                         </Box>
-                        <Typography variant="subtitle1" sx={{mb: 3}}>
-                            Всего часов обучения: <Typography component='span' display='inline-block' color='#325DF5'>{syllabus && syllabus.topics.length * syllabus.academic_hours}</Typography>
+                        <Typography level="body1" sx={{mb: 4}}>
+                            Всего часов обучения: <Typography component='span' display='inline-block' color='primary'>{syllabus && syllabus.topics.length * syllabus.academic_hours}</Typography>
                         </Typography>
-                        <Typography noWrap component="h1" variant="h5"  sx={{mb: 1}}>
+                        <Typography noWrap component="h1" level="h4"  sx={{mb: 1}}>
                                 План занятий ({syllabus && syllabus.year}):
                         </Typography>
                         <Table>
@@ -452,13 +452,13 @@ const Course = ({ data, id }) => {
                                 {syllabus && syllabus.topics.sort((prev, next) => prev.number - next.number).map((topic) => (
                                     <TableRow key={topic.id}>
                                         <TableCell>
-                                            <Typography  variant="subtitle1" component="p">
+                                            <Typography  level="body1" noWrap component="p">
                                                 Занятие №{topic.number}
                                             </Typography>
                                             </TableCell>
                                         <TableCell sx={{display: 'flex', justifyContent: "space-between", alignItems: "center"}}>
                                             <Link underline='hover' target="_blank" href={`${topic.methodical_material}`}>
-                                                <Typography  variant="subtitle1" component="p">
+                                                <Typography  level="body1" color='primary' component="p">
                                                     {topic.name}
                                                 </Typography>
                                             </Link>
@@ -484,7 +484,7 @@ const Course = ({ data, id }) => {
                                             width={20}
                                             height={20}
                                         />
-                                        <Typography  variant="subtitle1" component="p">
+                                        <Typography  level="body1">
                                             Добавить тему
                                         </Typography>
                                     </Box>
@@ -506,7 +506,7 @@ const Course = ({ data, id }) => {
                                                     width={32}
                                                     height={32}
                                                 />
-                                                <Typography  variant="h6" component="p">
+                                                <Typography  level="h5" component="p">
                                                     {group.name}
                                                 </Typography>
                                             </Box>
@@ -526,7 +526,7 @@ const Course = ({ data, id }) => {
                                                 width={32}
                                                 height={32}
                                             />
-                                            <Typography  variant="h6" component="p">
+                                            <Typography  level="h5" component="p">
                                                 Создать группу
                                             </Typography>
                                         </Box>

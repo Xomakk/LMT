@@ -4,7 +4,7 @@ import Grid from '@mui/material/Grid';
 
 import * as React from 'react';
 import Card from '@mui/material/Card';
-import Typography from '@mui/material/Typography';
+import Typography from '@mui/joy/Typography';
 import { Box, CardActionArea, Link} from '@mui/material';
 import Image from 'next/image';
 import courseImage from '../public/courses/Python.jpg'
@@ -74,6 +74,9 @@ const Courses = ({ data }) => {
 
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+            <Typography  level="h2" component="div" sx={{mb: 4}}>
+                Направления обучения:
+            </Typography>
             <Grid container alignItems='stretch' spacing={3} >
                 {courses && courses.map((course) => (
                     <Grid item key={course.id} lg={2}>
@@ -90,7 +93,7 @@ const Courses = ({ data }) => {
                                             placeholder='blur'
                                         />
                                     </Box>
-                                    <Typography  variant="h5" component="div" sx={{mt: 2}}>
+                                    <Typography  level="h5" component="div" sx={{mt: 2}}>
                                         {course.name}
                                     </Typography>
                                 </CardActionArea>
@@ -111,7 +114,7 @@ const Courses = ({ data }) => {
                                             loading="lazy"
                                         />
                                     </Box>
-                                    <Typography  variant="h5" width='inherit' textAlign='center' component="div" sx={{mt: 2}}>
+                                    <Typography level="h5" width='inherit' textAlign='center' component="div" sx={{mt: 2}}>
                                         Добавить курс
                                     </Typography>
                                 </CardActionArea>

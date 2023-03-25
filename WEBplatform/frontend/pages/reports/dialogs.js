@@ -10,7 +10,7 @@ import { Autocomplete, Checkbox, DialogContentText, FormControlLabel, FormGroup,
 import * as React from 'react';
 import { endpoint } from '@/utils/constants';
 import { getCookie } from '@/utils/functions';
-import { AddNewStudentDialog } from '../../students/dialogs';
+import { AddNewStudentDialog } from '../students/dialogs';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;

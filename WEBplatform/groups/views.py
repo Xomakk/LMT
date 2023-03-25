@@ -1,5 +1,6 @@
 import datetime
 
+from django.utils.dateparse import parse_datetime
 from rest_framework import status
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
@@ -7,11 +8,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import bad_request
 
-from groups.models import LearningGroup, Student, Lesson, StudentLessonStatus
-from learningDirections.models import Topic
+from groups.models import LearningGroup, Student, Lesson, StudentLessonStatus, LessonDays
+from groups.signals import create_lesson
+from learningDirections.models import Topic, LearningDirection
+from user.models import User
 from user.permissions import IsAdminOrReadOnly
 from groups.serializers import LearningGroupDemoSerializer, LearningGroupSerializer, StudentSerializer, \
-    StudentsDemoSerializer, LessonSerializer
+    StudentsDemoSerializer, LessonListSerializer, LessonSerializer
 
 
 class GroupListView(ListAPIView):
@@ -19,9 +22,27 @@ class GroupListView(ListAPIView):
     serializer_class = LearningGroupDemoSerializer
 
 
+def post_save_group(instance, **kwargs):
+    learning_direction = instance.learning_direction
+    syllabus = learning_direction.syllabus
+    topics = syllabus.topics.all()
+    for topic in topics:
+        create_lesson(topic, instance)
+
+
 class GroupCreateView(CreateAPIView):
-    queryset = LearningGroup.objects.all()
-    serializer_class = LearningGroupSerializer
+    def post(self, request, *args, **kwargs):
+        group = LearningGroup.objects.create(
+            name=request.data.get('name'),
+            study_year=request.data.get('study_year'),
+            address=request.data.get('address'),
+            date_first_lesson=parse_datetime(request.data.get('date_first_lesson')),
+            learning_direction=LearningDirection.objects.get(pk=request.data.get('learning_direction')),
+            teacher=User.objects.get(pk=request.data.get('teacher')),
+        )
+        group.days_of_lessons.set(LessonDays.objects.filter(day_number__in=request.data.get('days_of_lessons')))
+        post_save_group(group)
+        return Response(status=status.HTTP_200_OK)
 
 
 class GroupDetailView(RetrieveUpdateDestroyAPIView):
@@ -74,7 +95,7 @@ class LessonListView(ListAPIView):
 class CurrentLessonListView(APIView):
     def get(self, request, *args, **kwargs):
         queryset = Lesson.objects.filter(learning_group=kwargs['group_id']).all()
-        return Response([LessonSerializer(lesson).data for lesson in queryset], status=status.HTTP_200_OK)
+        return Response([LessonListSerializer(lesson).data for lesson in queryset], status=status.HTTP_200_OK)
 
 
 class LessonDetailView(RetrieveUpdateDestroyAPIView):
@@ -85,13 +106,13 @@ class LessonDetailView(RetrieveUpdateDestroyAPIView):
 
 class LessonAttendenseView(APIView):
     @staticmethod
-    def __add_student_status(lesson, student_id, status, comment):
+    def __add_student_status(lesson, student_id, attendense_status, comment):
         student_status = StudentLessonStatus(
             lesson=lesson,
             student=Student.objects.get(pk=student_id),
         )
         if status:
-            student_status.status = int(status)
+            student_status.status = int(attendense_status)
         if comment:
             student_status.comment = comment
         student_status.save()
@@ -119,8 +140,9 @@ class LessonAttendenseView(APIView):
                     if student_status:
                         self.__change_student_status(lesson, student_id, attendense_status, comment)
                     else:
-                        self.__add_student_status(lesson, student_id, status, comment)
+                        self.__add_student_status(lesson, student_id, attendense_status, comment)
             except Exception:
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response(status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_400_BAD_REQUEST)

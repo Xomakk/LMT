@@ -21,8 +21,8 @@ class LearningDirection(models.Model):
 class Syllabus(models.Model):
     year = models.IntegerField('Год', default=datetime.date.today().year)
     academic_hours = models.IntegerField(default=1)
-    learning_direction = models.ForeignKey(LearningDirection, on_delete=models.SET_NULL, null=True,
-                                           verbose_name='Направление обучения', related_name='syllabuses')
+    learning_direction = models.OneToOneField(LearningDirection, on_delete=models.CASCADE, null=True,
+                                              verbose_name='Направление обучения', related_name='syllabus')
 
     class Meta:
         verbose_name = 'План обучения'
@@ -37,7 +37,7 @@ class Topic(models.Model):
     number = models.IntegerField('Номер урока', default=0)
     name = models.CharField(max_length=256, default='Тема не задана')
     methodical_material = models.CharField('Ссылка на метод. материал', max_length=1024, default='Ссылка не задана')
-    syllabus = models.ForeignKey(Syllabus, on_delete=models.SET_NULL, null=True, verbose_name='Учебный план',
+    syllabus = models.ForeignKey(Syllabus, on_delete=models.CASCADE, null=True, verbose_name='Учебный план',
                                  related_name='topics')
 
     class Meta:

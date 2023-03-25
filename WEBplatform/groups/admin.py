@@ -37,4 +37,7 @@ class StudentLessonStatusAdmin(admin.ModelAdmin):
     list_filter = ['status']
 
 
-admin.site.register(LessonDays)
+@admin.register(LessonDays)
+class LessonDaysAdmin(admin.ModelAdmin):
+    list_display = ['id', 'day_number']
+    list_editable = ['day_number']
