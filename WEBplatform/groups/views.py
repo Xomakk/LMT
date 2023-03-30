@@ -13,13 +13,12 @@ from groups.signals import create_lesson
 from learningDirections.models import Topic, LearningDirection
 from user.models import User
 from user.permissions import IsAdminOrReadOnly
-from groups.serializers import LearningGroupDemoSerializer, LearningGroupSerializer, StudentSerializer, \
-    StudentsDemoSerializer, LessonListSerializer, LessonSerializer
+from groups.serializers import LearningGroupSerializer, StudentSerializer, LessonSerializer
 
 
 class GroupListView(ListAPIView):
     queryset = LearningGroup.objects.all()
-    serializer_class = LearningGroupDemoSerializer
+    serializer_class = LearningGroupSerializer
 
 
 def post_save_group(instance, **kwargs):
@@ -76,7 +75,7 @@ class StudentAddGroupView(APIView):
 
 class StudentShortListView(ListAPIView):
     queryset = Student.objects.all()
-    serializer_class = StudentsDemoSerializer
+    serializer_class = StudentSerializer
     # permission_classes = [IsAdminOrReadOnly, IsAuthenticated]
 
 
@@ -84,6 +83,19 @@ class StudentDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     # permission_classes = [IsAdminOrReadOnly, IsAuthenticated]
+
+
+#
+# class StudentDetailView(APIView):
+#     def put(self, request, *args, **kwargs):
+#         print(request.data)
+#         Response(status=status.HTTP_200_OK)
+#
+#     def get(self, request, pk, **kwargs):
+#         student = Student.objects.get(pk=pk)
+#         if student:
+#             return Response(StudentSerializer(student).data, status=status.HTTP_200_OK)
+#         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class LessonListView(ListAPIView):
@@ -95,7 +107,7 @@ class LessonListView(ListAPIView):
 class CurrentLessonListView(APIView):
     def get(self, request, *args, **kwargs):
         queryset = Lesson.objects.filter(learning_group=kwargs['group_id']).all()
-        return Response([LessonListSerializer(lesson).data for lesson in queryset], status=status.HTTP_200_OK)
+        return Response([LessonSerializer(lesson).data for lesson in queryset], status=status.HTTP_200_OK)
 
 
 class LessonDetailView(RetrieveUpdateDestroyAPIView):

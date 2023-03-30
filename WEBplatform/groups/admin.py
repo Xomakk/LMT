@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.utils.safestring import mark_safe
+
 from . import models
 
 from groups.models import LearningGroup, LessonDays, Student, Lesson, StudentLessonStatus
@@ -19,8 +21,16 @@ class learningGroupAdmin(admin.ModelAdmin):
 
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ['lastname', 'name', 'patronymic', 'display_learning_group', 'birthday', 'phone', 'email']
+    list_display = ['lastname', 'name', 'patronymic', 'display_learning_group', 'birthday', 'phone', 'email',
+                    'avatar_preview']
     list_editable = ['birthday', 'phone', 'email']
+    readonly_fields = ['avatar_preview']
+
+    def avatar_preview(self, instance):
+        if instance.avatar:
+            return mark_safe('<img src="%s" style="max-height: 100px"/>' % instance.avatar.url)
+
+    avatar_preview.short_description = u'Превью аватара:'
 
 
 @admin.register(Lesson)

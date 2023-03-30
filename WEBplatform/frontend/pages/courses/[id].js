@@ -617,24 +617,24 @@ const Course = ({ data, id }) => {
                 handleAgree={handleAgreeDeleteCourse}
             />
             <Dialog open={openSyllabusEdit} onClose={handleCloseSyllabusEdit}>
-            <DialogTitle>Редактирование учебного плана</DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Длительность занятия"
-                    type="number"
-                    fullWidth
-                    variant="standard"
-                    value={academicHours}
-                    onChange={(e) => setAcademicHours(e.target.value)}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleCloseSyllabusEdit}>Закрыть</Button>
-                <Button onClick={handleSyllabusEdit}>Отправить</Button>
-            </DialogActions>
-        </Dialog>
+                <DialogTitle>Редактирование учебного плана</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Длительность занятия"
+                        type="number"
+                        fullWidth
+                        variant="standard"
+                        value={academicHours}
+                        onChange={(e) => setAcademicHours(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseSyllabusEdit}>Закрыть</Button>
+                    <Button onClick={handleSyllabusEdit}>Отправить</Button>
+                </DialogActions>
+            </Dialog>
         </Container>
     )
 }

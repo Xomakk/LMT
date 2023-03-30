@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from learningDirections.models import LearningDirection, Syllabus, Topic
-from learningDirections.serializers import LearningDirectionDemoSerializer, SyllabusSerializer, TopicSerializer, \
-    LearningDirectionSerializer, SyllabusSmallSerializer
+from learningDirections.serializers import SyllabusSerializer, TopicSerializer, \
+    LearningDirectionSerializer
 
 
 class LearningDirectionCreateView(ListCreateAPIView):
@@ -24,7 +24,7 @@ class LearningDirectionShortListView(ListAPIView):
 
 class LearningDirectionDetailView(RetrieveUpdateDestroyAPIView):
     queryset = LearningDirection.objects.all()
-    serializer_class = LearningDirectionDemoSerializer
+    serializer_class = LearningDirectionSerializer
     # permission_classes = [IsAuthenticated]
 
 
@@ -47,7 +47,7 @@ class SyllabusCurrentView(APIView):
 
         if direction_id:
             syllabus = Syllabus.objects.filter(learning_direction=direction_id).first()
-            return Response(SyllabusSmallSerializer(syllabus).data, status=status.HTTP_200_OK)
+            return Response(SyllabusSerializer(syllabus).data, status=status.HTTP_200_OK)
 
         return Response({'error': 'syllabus not found'}, status=status.HTTP_404_NOT_FOUND)
 

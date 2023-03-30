@@ -50,7 +50,7 @@ export const getServerSideProps = async (context) => {
 
 const Group = ({ data, lessonId }) => {
     const [lesson, setLesson] = React.useState(data)
-    const [group, setGroup] = React.useState()
+    const [group, setGroup] = React.useState(data.learning_group)
 
     // ------------------------------- Обновление данных урока ------------------------------------------- //
 
@@ -63,39 +63,8 @@ const Group = ({ data, lessonId }) => {
 
         const data = await response.json();
         setLesson(data);
+        setGroup(data.learning_group)
     }
-
-    // ------------------------------- Обновление данных группы ------------------------------------------ //
-
-    const getGroup = async () => {
-        try {
-            var myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
-            // myHeaders.append("Cookie", getCookie("csrftoken"));
-
-            var requestOptions = {
-                method: 'GET',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-
-            const response = await fetch(`${endpoint}/groups/${lesson.learning_group}/`, requestOptions)
-
-            if (!response.ok) {
-                throw new Error('Ошибка обновления группы. RESPONSE ERROR');
-            }
-
-            const data = await response.json()
-            setGroup(data);
-        }
-        catch (error) {
-            console.error(error);
-        }
-    }
-
-    React.useEffect(() => {
-        getGroup();
-    }, [])
 
     // ------------------------------- Обработки изменения посещаемости учеников ------------------------- //
 
@@ -174,7 +143,7 @@ const Group = ({ data, lessonId }) => {
     // ------------------------------- Рендер стринцы ---------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <IconButton size="small" sx={{borderRadius: '15%', mb: 3}} href={`/groups/${lesson.learning_group}`}>
+            <IconButton size="small" sx={{borderRadius: '15%', mb: 3}} href={`/groups/${lesson.learning_group.id}`}>
                 <ArrowBackIosIcon />
                 Обратно к группе
             </IconButton>
@@ -239,15 +208,14 @@ const Group = ({ data, lessonId }) => {
                                             <Stack direction={'row'} alignItems={'center'} spacing={2}>
                                                 <IconButton
                                                     color="neutral"
-                                                    onClick={() => alert('You clicked!')}
+                                                    component='a'
+                                                    href={`/students/${student.id}`}
                                                     sx={{
                                                         p: 0
                                                     }}
                                                 >
                                                     <Avatar 
                                                         alt={`${student.lastname} ${student.name}`}
-                                                        src="/broken-image.jpg" // нужно заменить на аватарки учеников
-                                                        href='/'
                                                     >
                                                         {student.lastname[0] + student.name[0]}
                                                     </Avatar>

@@ -142,13 +142,12 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
 
 
 export const CommentDialog = ({status, handleClose, updateData, default_comment, student_name}) => {
-    console.log(student_name)
     return (
         <Modal open={status} onClose={handleClose}>
             <ModalDialog
-            aria-labelledby="basic-modal-dialog-title"
-            aria-describedby="basic-modal-dialog-description"
-            sx={{ maxWidth: 500 }}
+                aria-labelledby="basic-modal-dialog-title"
+                aria-describedby="basic-modal-dialog-description"
+                sx={{ width: 500 }}
             >
                 <Stack sx={{mb: 2}}>
                     <Stack spacing={3}>

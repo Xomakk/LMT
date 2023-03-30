@@ -140,7 +140,7 @@ const Group = ({ data, groupId }) => {
                 throw new Error('Ошибка добавления группы. RESPONSE ERROR');
             }
 
-            updateCourse();
+            UpdateGroup();
         }
         catch (error) {
             console.error(error);

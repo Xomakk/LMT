@@ -48,6 +48,10 @@ class LearningGroup(models.Model):
     display_days_of_lessons.short_description = 'Дни занятий'
 
 
+def make_path(instance, filename):
+    return f'avatars/profile_image_{instance.id}/{filename}'
+
+
 class Student(models.Model):
     name = models.CharField('Имя', max_length=255, default='Не указано', blank=True)
     lastname = models.CharField('Фамилия', max_length=255, default='Не указано', blank=True)
@@ -55,7 +59,9 @@ class Student(models.Model):
     email = models.EmailField('Email', unique=True, null=True, blank=True)
     phone = models.CharField('Телефон', max_length=15, null=True, blank=True)
     birthday = models.DateField('День рождения', null=True, blank=True)
-    learning_group = models.ManyToManyField(LearningGroup, blank=True, verbose_name='Учебные группы', related_name='students')
+    learning_group = models.ManyToManyField(LearningGroup, blank=True, verbose_name='Учебные группы',
+                                            related_name='students')
+    avatar = models.ImageField(upload_to=make_path, null=True, blank=True, verbose_name='Аватар')
 
     class Meta:
         verbose_name = 'Ученик'
@@ -94,7 +100,8 @@ class StudentAttendanceStatusValues(models.IntegerChoices):
 
 # таблица соответствия учник-статус (был \ не был \ не был по уважительной причине) для урока
 class StudentLessonStatus(models.Model):
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, verbose_name='Урок', related_name='student_lesson_status')
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, null=True, verbose_name='Урок',
+                               related_name='student_lesson_status')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, verbose_name='Ученик')
     status = models.SmallIntegerField('Статус', choices=StudentAttendanceStatusValues.choices, default=10)
     comment = models.CharField('Комментарий', blank=True, null=True, max_length=512)

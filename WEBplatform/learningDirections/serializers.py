@@ -1,13 +1,7 @@
 from rest_framework import serializers
 
-from groups.models import LearningGroup
+from groups.serializers import LearningGroupSerializer
 from learningDirections.models import LearningDirection, Syllabus, Topic
-
-
-class LearningDirectionSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LearningDirection
-        fields = '__all__'
 
 
 class TopicSerializer(serializers.ModelSerializer):
@@ -23,31 +17,13 @@ class SyllabusSerializer(serializers.ModelSerializer):
         model = Syllabus
         fields = '__all__'
 
-
-class TopicSmallSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Topic
-        exclude = ['syllabus']
+    # fields = ['name', 'course_duration', 'learning_groups', 'syllabus']
 
 
-class SyllabusSmallSerializer(serializers.ModelSerializer):
-    topics = TopicSmallSerializer(many=True)
-
-    class Meta:
-        model = Syllabus
-        exclude = ['learning_direction']
-
-
-class LearningGroupSmallSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LearningGroup
-        fields = ['id', 'name']
-
-
-class LearningDirectionDemoSerializer(serializers.ModelSerializer):
-    learning_groups = LearningGroupSmallSerializer(many=True, required=False)
-    syllabus = SyllabusSmallSerializer(required=False)
+class LearningDirectionSerializer(serializers.ModelSerializer):
+    learning_groups = LearningGroupSerializer(many=True, required=False)
+    syllabus = SyllabusSerializer(required=False)
 
     class Meta:
         model = LearningDirection
-        fields = ['name', 'course_duration', 'learning_groups', 'syllabus']
+        fields = '__all__'

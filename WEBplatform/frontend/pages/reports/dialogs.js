@@ -10,7 +10,7 @@ import { Autocomplete, Checkbox, DialogContentText, FormControlLabel, FormGroup,
 import * as React from 'react';
 import { endpoint } from '@/utils/constants';
 import { getCookie } from '@/utils/functions';
-import { AddNewStudentDialog } from '../students/dialogs';
+import { StudentDialog } from '../students/dialogs';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -119,7 +119,7 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
                 >
                     cоздать нового
                 </Button>
-                <AddNewStudentDialog 
+                <StudentDialog 
                     status={openAddNewStudentDialog} 
                     handleClose={handleCloseAddNewStudentDialog} 
                     updateData={updateStudentsList}

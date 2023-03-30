@@ -37,3 +37,7 @@ export function deleteCookie(name) {
     'max-age': -1
   })
 }
+
+export const getFullName = (object) => {
+    return `${object.lastname} ${object.name} ${object.patronymic}`
+}

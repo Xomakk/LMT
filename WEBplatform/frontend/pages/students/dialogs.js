@@ -10,132 +10,177 @@ import { Typography } from '@mui/material';
 import * as React from 'react';
 import { endpoint } from '@/utils/constants';
 import { getCookie } from '@/utils/functions';
+import { FormControl, FormLabel, IconButton, Input, Stack } from '@mui/joy';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
+import CloseIcon from '@mui/icons-material/Close';
 
-export const AddNewStudentDialog = ({status, handleClose, updateData}) => {
-    const [name, setName] = React.useState("");
-    const [lastname, setLastname] = React.useState("");
-    const [patronymic, setPatronymic] = React.useState("");
-    const [email, setEmail] = React.useState("");
-    const [phone, setPhone] = React.useState("");
-    const [birthday, setBirthday] = React.useState("2023-01-01");
+export const StudentDialog = ({status, handleClose, updateData, adding, student}) => {
+    const [name, setName] = React.useState(student ? student.name : "");
+    const [lastname, setLastname] = React.useState(student ? student.lastname : "");
+    const [patronymic, setPatronymic] = React.useState(student ? student.patronymic : "");
+    const [email, setEmail] = React.useState(student ? student.email : "");
+    const [phone, setPhone] = React.useState(student ? student.phone : "");
+    const [birthday, setBirthday] = React.useState(student ? student.birthday : "2023-01-01");
+    const [avatar, setAvatar] = React.useState();
 
     // создание нового студента
-    const addNewStudent = async () => {
+    const fetchData = async ({method}) => {
 
         var myHeaders = new Headers();
-        myHeaders.append("Content-Type", "application/json");
         myHeaders.append("Cookie", getCookie("csrftoken"));
 
-        const raw = JSON.stringify({
-            "name": name,
-            "lastname": lastname,
-            "patronymic": patronymic,
-            "email": email,
-            "phone": phone,
-            "birthday": birthday
-        })
+        const formData = new FormData();
+        formData.append("name", name)
+        formData.append("lastname", lastname)
+        formData.append("patronymic", patronymic)
+        formData.append("email", email)
+        formData.append("phone", phone)
+        formData.append("birthday", birthday)
+        if (avatar) {
+            formData.append("avatar", avatar, avatar.name)
+        }
 
         var requestOptions = {
-                method: 'POST',
+                method: method,
                 headers: myHeaders,
-                body: raw,
-                redirect: 'follow'
+                body: formData
             };
-
-        const response = await fetch(`${endpoint}/students/`, requestOptions)
+ 
+        const response = await fetch(`${endpoint}/students/${student ? student.id + '/' : ''}`, requestOptions)
 
         if (!response.ok) {
-                throw new Error('Ошибка создания ученика. RESPONSE ERROR');
+                throw new Error('Ошибка создания или редактирования ученика. RESPONSE ERROR');
             }
 
         const data = await response.json()
         
-        setName('');
-        setLastname('');
-        setPatronymic('');
-        setEmail('');
-        setPhone('');
-        setBirthday("2023-01-01");
+        setName(student ? student.name : "");
+        setLastname(student ? student.lastname : "");
+        setPatronymic(student ? student.patronymic : "");
+        setEmail(student ? student.email : "");
+        setPhone(student ? student.phone : "");
+        setBirthday(student ? student.birthday : "2023-01-01");
+        setAvatar();
         handleClose();
         updateData(data);
     }
 
+    const handleAddStudent = () => {
+        fetchData({method: 'POST'});
+    }
+
+    const handleEditStudent = () => {
+        fetchData({method: 'PUT'});
+    }
+
     return (
         <Dialog open={status} onClose={handleClose}>
-            <DialogTitle>Создание нового ученика</DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="name"
-                    label="Имя"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="lastname"
-                    label="Фамилия"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    value={lastname}
-                    onChange={(e) => setLastname(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="patronymic"
-                    label="Отчество"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    value={patronymic}
-                    onChange={(e) => setPatronymic(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="email"
-                    label="Email"
-                    type="email"
-                    fullWidth
-                    variant="standard"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="phone"
-                    label="Телефон"
-                    type="phone"
-                    fullWidth
-                    variant="standard"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    id="birthday"
-                    label="Дата рождения"
-                    type="date"
-                    fullWidth
-                    variant="standard"
-                    value={birthday}
-                    onChange={(e) => setBirthday(e.target.value)}
-                />
- 
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose}>Закрыть</Button>
-                <Button onClick={addNewStudent}>Добавить</Button>
-            </DialogActions>
+            <DialogTitle>Данные ученика</DialogTitle>
+            <form onSubmit={(event) => {
+                event.preventDefault();
+                adding ? handleAddStudent() : handleEditStudent();
+            }}>
+                <DialogContent sx={{minWidth: '400px'}}>
+                    <Stack spacing={2}>
+                        <FormControl>
+                            <FormLabel>Имя</FormLabel>
+                            <Input 
+                                id="name"
+                                type="text"
+                                variant="outlined"
+                                value={name}
+                                required
+                                onChange={(e) => setName(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Фамилия</FormLabel>
+                            <Input 
+                                id="lastname"
+                                type="text"
+                                variant="outlined"
+                                value={lastname}
+                                required
+                                onChange={(e) => setLastname(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Отчество</FormLabel>
+                            <Input 
+                                id="patronymic"
+                                type="text"
+                                variant="outlined"
+                                value={patronymic}
+                                required
+                                onChange={(e) => setPatronymic(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Email</FormLabel>
+                            <Input 
+                                id="email"
+                                type="email"
+                                variant="outlined"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Телефон</FormLabel>
+                            <Input 
+                                id="phone"
+                                type="phone"
+                                variant="outlined"
+                                value={phone}
+                                onChange={(e) => setPhone(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Дата рождения</FormLabel>
+                            <Input 
+                                id="birthday"
+                                type="date"
+                                variant="outlined"
+                                value={birthday}
+                                onChange={(e) => setBirthday(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Фотография</FormLabel>
+                            <Stack spacing={1}>
+                                <Button variant="outlined" component='label'>
+                                    Выбрать
+                                    <input 
+                                        id="profile_image"
+                                        type="file"
+                                        variant="standart"
+                                        hidden
+                                        onChange={(e) => setAvatar(e.target.files[0])}
+                                    />
+                                </Button>
+                                <Stack direction={'row'}spacing={2}>
+                                    <label htmlFor='profile_image'>
+                                        <Typography color={'primary'}>
+                                            <AttachFileOutlinedIcon /> {avatar ? avatar.name : 'файл не выбран'}
+                                        </Typography>
+                                    </label >
+                                    {   avatar &&
+                                        <IconButton variant='outline' size='small'
+                                            onClick={() => setAvatar()}
+                                        >
+                                            <CloseIcon sx={{color: 'red'}}/>
+                                        </IconButton>
+                                    }
+                                </Stack>
+                            </Stack>
+                        </FormControl>
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Закрыть</Button>
+                    <Button onClick={adding ? handleAddStudent : handleEditStudent}>Сохранить</Button>
+                </DialogActions>
+            </form>
         </Dialog>
     )
 }
