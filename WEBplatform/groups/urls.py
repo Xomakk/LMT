@@ -1,11 +1,8 @@
 from django.urls import path
 
 from groups.views import GroupListView, GroupDetailView, GroupCreateView, StudentListCreateView, StudentDetailView, \
-    StudentShortListView, StudentAddGroupView, LessonDetailView, LessonAttendenseView, \
+    StudentAddGroupView, LessonDetailView, LessonAttendenseView, \
     LessonListView, CurrentLessonListView
-
-# StudentListCreateView, StudentDetailView, \
-    # LessonListCreateView, LessonDetailView
 
 urlpatterns = [
     path('api/v1/groups/', GroupListView.as_view()),
@@ -14,7 +11,6 @@ urlpatterns = [
     path('api/v1/groups/<int:group_id>/lessons/', CurrentLessonListView.as_view()),
 
     path('api/v1/students/', StudentListCreateView.as_view()),
-    path('api/v1/students/shortlist/', StudentShortListView.as_view()),
     path('api/v1/students/<int:pk>/', StudentDetailView.as_view()),
     path('api/v1/students/addGroup/<int:group_id>/', StudentAddGroupView.as_view()),
 

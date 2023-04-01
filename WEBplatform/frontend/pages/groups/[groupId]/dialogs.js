@@ -10,7 +10,7 @@ import { Autocomplete, Checkbox, DialogContentText, FormControlLabel, FormGroup,
 import * as React from 'react';
 import { endpoint } from '@/utils/constants';
 import { getCookie } from '@/utils/functions';
-import { StudentDialog } from '../students/dialogs';
+import { StudentDialog } from '@/pages/students/dialogs';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -21,7 +21,7 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
     const [selectedStudents, setSelectedStudents] = React.useState([]);
 
     const getStudents = async () => {
-        const newResponse = await fetch(`${endpoint}/students/shortlist/`);
+        const newResponse = await fetch(`${endpoint}/students/`);
         const data = await newResponse.json();
 
         if (!newResponse.ok) {
@@ -123,6 +123,7 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
                     status={openAddNewStudentDialog} 
                     handleClose={handleCloseAddNewStudentDialog} 
                     updateData={updateStudentsList}
+                    adding={true}
                 />
             </DialogContent>
             <DialogActions>

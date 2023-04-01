@@ -80,7 +80,7 @@ class Student(models.Model):
 class Lesson(models.Model):
     topic = models.ForeignKey(Topic, verbose_name='Тема', on_delete=models.CASCADE, null=True)
     learning_group = models.ForeignKey(LearningGroup, verbose_name='Учебная группа', on_delete=models.CASCADE,
-                                       null=True)
+                                       null=True, related_name='lessons')
     lesson_date = models.DateField('Дата урока')
 
     class Meta:

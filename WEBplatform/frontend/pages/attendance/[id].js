@@ -20,7 +20,7 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import { AddStudentsDialog } from './dialogs';
+import { AddStudentsDialog } from '../groups/[groupId]/dialogs';
 import { DeleteDialog, GroupDialog } from '../courses/dialogs';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { green } from '@mui/material/colors';
@@ -395,19 +395,7 @@ const Report = ({ data, id }) => {
             </Paper>
 
             <Card sx={{mt: 3, width: '300px'}}>
-                <CardActionArea sx={{p: 0.5, backgroundColor: '#efefef'}} onClick={handleOpenAddStudentsDialog}>
-                    <Box display='flex' justifyContent="center" alignItems="center" gap={1}>
-                        <Image src={addImage} 
-                            alt="Python"
-                            loading="lazy"
-                            width={20}
-                            height={20}
-                        />
-                        <Typography  variant="subtitle1" component="p">
-                            Добавить учеников
-                        </Typography>
-                    </Box>
-                </CardActionArea>
+                
             </Card>
 
             <AddStudentsDialog 

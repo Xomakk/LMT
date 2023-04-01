@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 
 from learningDirections.models import LearningDirection, Syllabus, Topic
 from learningDirections.serializers import SyllabusSerializer, TopicSerializer, \
-    LearningDirectionSerializer
+    LearningDirectionSerializer, LearningDirectionAttendanceSerializer
 
 
 class LearningDirectionCreateView(ListCreateAPIView):
@@ -16,9 +16,9 @@ class LearningDirectionCreateView(ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
 
 
-class LearningDirectionShortListView(ListAPIView):
+class LearningDirectionAttendanceListView(ListAPIView):
     queryset = LearningDirection.objects.all()
-    serializer_class = LearningDirectionSerializer
+    serializer_class = LearningDirectionAttendanceSerializer
     # permission_classes = [IsAuthenticated]
 
 
@@ -26,6 +26,8 @@ class LearningDirectionDetailView(RetrieveUpdateDestroyAPIView):
     queryset = LearningDirection.objects.all()
     serializer_class = LearningDirectionSerializer
     # permission_classes = [IsAuthenticated]
+
+
 
 
 # TIME TABLE

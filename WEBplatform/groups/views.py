@@ -73,29 +73,10 @@ class StudentAddGroupView(APIView):
             return Response(status=status.HTTP_200_OK)
 
 
-class StudentShortListView(ListAPIView):
-    queryset = Student.objects.all()
-    serializer_class = StudentSerializer
-    # permission_classes = [IsAdminOrReadOnly, IsAuthenticated]
-
-
 class StudentDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     # permission_classes = [IsAdminOrReadOnly, IsAuthenticated]
-
-
-#
-# class StudentDetailView(APIView):
-#     def put(self, request, *args, **kwargs):
-#         print(request.data)
-#         Response(status=status.HTTP_200_OK)
-#
-#     def get(self, request, pk, **kwargs):
-#         student = Student.objects.get(pk=pk)
-#         if student:
-#             return Response(StudentSerializer(student).data, status=status.HTTP_200_OK)
-#         return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 class LessonListView(ListAPIView):
@@ -157,4 +138,5 @@ class LessonAttendenseView(APIView):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             else:
                 return Response(status=status.HTTP_200_OK)
+        print([student_id, topic_id, group_id])
         return Response(status=status.HTTP_400_BAD_REQUEST)

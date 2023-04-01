@@ -93,11 +93,11 @@ const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Ученики" />
     </ListItemButton>
-    <ListItemButton href={'/reports'}>
+    <ListItemButton href={'/attendance'}>
       <ListItemIcon>
         <BarChartIcon />
       </ListItemIcon>
-      <ListItemText primary="Отчеты" />
+      <ListItemText primary="Посещаемость" />
     </ListItemButton>
   </React.Fragment>
 );

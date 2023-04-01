@@ -1,12 +1,12 @@
 from django.urls import path
 
 from learningDirections.views import LearningDirectionCreateView, LearningDirectionDetailView, SyllabusCreateView, \
-    SyllabusDetailView, TopicCreateView, TopicDetailView, LearningDirectionShortListView, SyllabusCurrentView
+    SyllabusDetailView, TopicCreateView, TopicDetailView, SyllabusCurrentView, LearningDirectionAttendanceListView
 
 urlpatterns = [
     # LEARNING DIRECTION
     path('api/v1/directions/', LearningDirectionCreateView.as_view()),
-    path('api/v1/directions/shortlist', LearningDirectionShortListView.as_view()),
+    path('api/v1/directions/attendance/', LearningDirectionAttendanceListView.as_view()),
     path('api/v1/directions/<int:pk>/', LearningDirectionDetailView.as_view()),
     # TIME TABLE
     path('api/v1/syllabuses/', SyllabusCreateView.as_view()),

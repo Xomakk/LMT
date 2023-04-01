@@ -5,9 +5,9 @@ import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Link, Stack, IconButton, ButtonGroup} from '@mui/material';
+import { CardActionArea, Box, Link, Stack, IconButton, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead} from '@mui/material';
 import courseImage from '@/public/courses/Python.jpg'
-import { getCookie } from '@/utils/functions';
+import { getCookie, getFullName } from '@/utils/functions';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,6 +15,10 @@ import { useRouter } from 'next/router';
 import { DeleteDialog, GroupDialog } from '@/pages/courses/dialogs';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+import { Avatar, Button } from '@mui/joy';
+import AddIcon from '@mui/icons-material/Add';
+import { AddStudentsDialog } from './dialogs';
+import Image from 'next/image';
 
 export const getServerSideProps = async (context) => {
     const { groupId } = context.params;
@@ -89,7 +93,7 @@ const Group = ({ data, groupId }) => {
     const [address, setAddress] = React.useState(group.address)
     const [dateFirstLesson, setDateFirstLesson] = React.useState(group.date_first_lesson.slice(0, group.date_first_lesson.indexOf('T')))
     const [timeLesson, setTimeLesson] = React.useState(group.date_first_lesson.slice(group.date_first_lesson.indexOf('T') + 1, group.date_first_lesson.indexOf('+')))
-    const [teacher, setTeacher] = React.useState(group.teacher)
+    const [teacher, setTeacher] = React.useState(group.teacher.id)
     const [daysOfLessons, setDaysOfLessons] = React.useState(group.days_of_lessons.map(day => String(day)))
     const [teachers, setTeachers] = React.useState(false);
 
@@ -186,10 +190,22 @@ const Group = ({ data, groupId }) => {
         router.push('/')
     }
 
+    // ------------------------------- Добавление учеников ----------------------------------------------- //
+
+    const [openAddStudentsDialog, setOpenAddStudentsDialog] = React.useState(false);
+
+    const handleOpenAddStudentsDialog = () => {
+        setOpenAddStudentsDialog(true);
+    };
+
+    const handleCloseAddStudentsDialog = () => {
+        setOpenAddStudentsDialog(false);
+    };
+
     // ------------------------------- Рендер стринцы ---------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <IconButton size="small" sx={{borderRadius: '10%', mb: 3}} href={`/courses/${group.learning_direction}`}>
+            <IconButton size="small" sx={{borderRadius: '10%', mb: 3}} href={`/courses/${group.learning_direction.id}`}>
                 <ArrowBackIosIcon />
                 Обратно к курсу
             </IconButton>
@@ -218,24 +234,83 @@ const Group = ({ data, groupId }) => {
                 </ButtonGroup>
             </Stack>
 
-            <Grid item>
-                <Grid container spacing={3}>
-                    {lessons && lessons.map( (lesson) => (
-                        <Grid item lg={12} key={lesson.id}>
-                            <Link underline='none' href={`/groups/${groupId}/lessons/${lesson.id}/`}>
-                                <Card>
-                                    <CardActionArea sx={{ p: 2}}>
-                                        <Box display='flex' alignItems='center' gap={2}>
-                                            <DoubleArrowIcon fontSize='large'/>
-                                            <Typography  level="h6" component="p">
-                                                <b>Урок №{lesson.topic.number}</b> {lesson.topic.name}
-                                            </Typography>
-                                        </Box>
-                                    </CardActionArea>
-                                </Card>
-                            </Link>
+            <Grid container spacing={3}>
+                <Grid item sx={{width: 450}}>
+                    <Stack gap={2}>
+                        <Paper>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Typography level='h4'>Список группы</Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {group.students.map((student) => (
+                                        <TableRow>
+                                            <TableCell>
+                                                <Button
+                                                    variant='plain'
+                                                    color='none'
+                                                    component='a'
+                                                    href={`/students/${student.id}`}
+                                                    sx={{
+                                                        p: 0
+                                                    }}
+                                                >
+                                                    <Stack direction={'row'} alignItems={'center'} spacing={2}>
+                                                        <Avatar
+                                                            src={student.avatar}
+                                                        >
+                                                            {student.lastname[0] + student.name[0]}
+                                                        </Avatar>
+                                                        <Typography level="body1" fontWeight='bold'>
+                                                            {getFullName(student)}
+                                                        </Typography>
+                                                    </Stack>
+                                                </Button>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </Paper>
+                        <Button 
+                            onClick={handleOpenAddStudentsDialog}
+                            variant="solid"
+                        >
+                            <Stack direction={'row'} alignItems={'center'} gap={1}>
+                                <AddIcon/>
+                                <Typography level='h6' color='inherit' component="p">
+                                    Добавить учеников
+                                </Typography>
+                            </Stack>
+                        </Button>
+                    </Stack>
+                </Grid>
+                <Grid item>
+                    <Grid container spacing={3}>
+                        <Grid item lg={12}>
+                            <Stack gap={2}>
+                                <Box p={2} pb={0}><Typography level='h4'>План уроков</Typography></Box>
+                                {lessons && lessons.map( (lesson) => (
+                                    <Link underline='none' href={`/groups/${groupId}/lessons/${lesson.id}/`}  key={lesson.id}>
+                                        <Card>
+                                            <CardActionArea sx={{ p: 2}}>
+                                                <Box display='flex' alignItems='center' gap={2}>
+                                                    <DoubleArrowIcon fontSize='large'/>
+                                                    <Typography  level="body1" component="p">
+                                                        <b>Урок №{lesson.topic.number}</b> - {lesson.topic.name}
+                                                    </Typography>
+                                                </Box>
+                                            </CardActionArea>
+                                        </Card>
+                                    </Link>
+                                ))}
+                            </Stack>
                         </Grid>
-                    ))}
+                    </Grid>
                 </Grid>
             </Grid>
             
@@ -268,6 +343,12 @@ const Group = ({ data, groupId }) => {
                 status={groupDeleteDeleteDialog} 
                 handleClose={handleCloseGroupDeleteDialog} 
                 handleAgree={handleAgreeDeleteGroup}
+            />
+            <AddStudentsDialog
+                status={openAddStudentsDialog} 
+                handleClose={handleCloseAddStudentsDialog} 
+                updateData={UpdateGroup}
+                group={group}
             />
         </Container>
     )

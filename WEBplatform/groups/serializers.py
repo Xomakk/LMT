@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from groups.models import LearningGroup, LessonDays, Student, Lesson, StudentLessonStatus
+from user.serializers import UserSerializer
 
 
 class StudentLessonStatusSerializer(serializers.ModelSerializer):
@@ -18,7 +19,7 @@ class StudentSerializer(serializers.ModelSerializer):
 class LessonDaysSerializer(serializers.ModelSerializer):
     class Meta:
         model = LessonDays
-        fields = ['day_number']
+        fields = '__all__'
 
 
 class StudentsFieldSerializer(serializers.ModelSerializer):
@@ -29,11 +30,10 @@ class StudentsFieldSerializer(serializers.ModelSerializer):
 
 class LearningGroupSerializer(serializers.ModelSerializer):
     students = StudentsFieldSerializer(many=True, required=False, read_only=True)
-
+    teacher = UserSerializer(required=False, read_only=True)
     class Meta:
         model = LearningGroup
         fields = '__all__'
-        depth = 1
 
 
 class LessonSerializer(serializers.ModelSerializer):
@@ -44,3 +44,5 @@ class LessonSerializer(serializers.ModelSerializer):
         model = Lesson
         fields = '__all__'
         depth = 1
+
+
