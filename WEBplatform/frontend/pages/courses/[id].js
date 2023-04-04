@@ -45,6 +45,8 @@ export const getServerSideProps = async (context) => {
 const Course = ({ data, id }) => {
     const [course, setCourse] = React.useState(data)
     const [syllabus, setSyllabus] = React.useState(data.syllabus)
+    const [feedbackParams, setFeedbackParams] = React.useState(course.feedback_params);
+
 
     // обновление курса после внесения изменений
     const updateCourse = async () => {
@@ -157,16 +159,17 @@ const Course = ({ data, id }) => {
             myHeaders.append("Cookie", getCookie("csrftoken"));
 
         var raw = JSON.stringify({
-                "name": courseName,
-                "course_duration": courseDuration
-            });
+            "name": courseName,
+            "course_duration": courseDuration,
+            "feedback_params": feedbackParams,
+        })
 
         var requestOptions = {
-                method: 'PUT',
-                headers: myHeaders,
-                body: raw,
-                redirect: 'follow'
-            };
+            method: 'PUT',
+            headers: myHeaders,
+            body: raw,
+            redirect: 'follow'
+        };
 
         const response = await fetch(`${endpoint}/directions/${id}/`, requestOptions)
 
@@ -571,7 +574,9 @@ const Course = ({ data, id }) => {
                         courseName: courseName,
                         setCourseName: setCourseName,
                         courseDuration: courseDuration,
-                        setCourseDuration: setCourseDuration
+                        setCourseDuration: setCourseDuration,
+                        feedbackParams: feedbackParams,
+                        setFeedbackParams: setFeedbackParams,
                     }
                 }
             />

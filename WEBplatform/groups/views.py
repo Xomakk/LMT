@@ -29,17 +29,12 @@ def post_save_group(instance, **kwargs):
         create_lesson(topic, instance)
 
 
-class GroupCreateView(CreateAPIView):
+class GroupCreateView(APIView):
     def post(self, request, *args, **kwargs):
-        group = LearningGroup.objects.create(
-            name=request.data.get('name'),
-            study_year=request.data.get('study_year'),
-            address=request.data.get('address'),
-            date_first_lesson=parse_datetime(request.data.get('date_first_lesson')),
-            learning_direction=LearningDirection.objects.get(pk=request.data.get('learning_direction')),
-            teacher=User.objects.get(pk=request.data.get('teacher')),
-        )
-        group.days_of_lessons.set(LessonDays.objects.filter(day_number__in=request.data.get('days_of_lessons')))
+        serializer = LearningGroupSerializer(data=request.data, partial=True)
+        serializer.is_valid()
+        group = serializer.save()
+        print(group)
         post_save_group(group)
         return Response(status=status.HTTP_200_OK)
 
@@ -60,13 +55,9 @@ class StudentAddGroupView(APIView):
     def put(self, request, *args, **kwargs):
         group_id = kwargs.get('group_id', None)
         try:
-            if not group_id:
-                raise Exception('Group ID is not defined')
-            new_group = LearningGroup.objects.get(pk=group_id)
-            for student_id in request.data['students']:
-                student = Student.objects.get(pk=student_id)
-                if new_group not in student.learning_group.all():
-                    student.learning_group.add(new_group)
+            group = LearningGroup.objects.get(pk=group_id)
+            students = Student.objects.filter(pk__in=request.data['students']).all()
+            group.students.set(students)
         except Exception as error:
             return Response(bad_request(request, error))
         else:

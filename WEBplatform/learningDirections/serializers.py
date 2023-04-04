@@ -1,5 +1,6 @@
 from rest_framework import serializers
 
+from feedback.serializers import FeedbackParamSerializer
 from groups.models import LearningGroup, Lesson
 from groups.serializers import LearningGroupSerializer, StudentLessonStatusSerializer, StudentsFieldSerializer
 from learningDirections.models import LearningDirection, Syllabus, Topic
@@ -20,8 +21,9 @@ class SyllabusSerializer(serializers.ModelSerializer):
 
 
 class LearningDirectionSerializer(serializers.ModelSerializer):
-    learning_groups = LearningGroupSerializer(many=True, required=False)
-    syllabus = SyllabusSerializer(required=False)
+    learning_groups = LearningGroupSerializer(many=True, required=False, read_only=True)
+    syllabus = SyllabusSerializer(required=False, read_only=True)
+    feedback_params = FeedbackParamSerializer(many=True, required=False, read_only=True)
 
     class Meta:
         model = LearningDirection

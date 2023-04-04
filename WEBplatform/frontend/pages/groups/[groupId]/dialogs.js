@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -6,11 +5,12 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { Autocomplete, Checkbox, DialogContentText, FormControlLabel, FormGroup, MenuItem, Typography } from '@mui/material';
+import { Autocomplete, Checkbox, DialogContentText, FormControlLabel, FormGroup, MenuItem} from '@mui/material';
 import * as React from 'react';
 import { endpoint } from '@/utils/constants';
 import { getCookie } from '@/utils/functions';
 import { StudentDialog } from '@/pages/students/dialogs';
+import { Button, Typography } from '@mui/joy';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -18,7 +18,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
     const [students, setStudents] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
-    const [selectedStudents, setSelectedStudents] = React.useState([]);
+    const [selectedStudents, setSelectedStudents] = React.useState(group.students);
 
     const getStudents = async () => {
         const newResponse = await fetch(`${endpoint}/students/`);
@@ -27,8 +27,9 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
         if (!newResponse.ok) {
             throw new Error('Ошибка получения списка учеников. RESPONSE ERROR');
         }
-        
+
         setStudents(data);
+        // setStudents(data.filter(student => !group.students.map(stud => stud.id).includes(student.id)));
         setLoading(false);
     }
     
@@ -56,9 +57,9 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
                 throw new Error('Ошибка добавления учеников. RESPONSE ERROR');
             }
         
-        setSelectedStudents([]);
         updateData();
         handleClose();
+        setSelectedStudents(group.students);
     }
 
     // создание нового студента
@@ -100,6 +101,7 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
                     renderOption={(props, option, { selected }) => (
                         <li {...props}>
                         <Checkbox
+                            key={option.id}
                             icon={icon}
                             checkedIcon={checkedIcon}
                             style={{ marginRight: 8 }}
@@ -114,10 +116,9 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
                     )}
                 />
                 <Button sx={{mt: 2}}
-                        variant="contained"
                         onClick={handleOpenAddNewStudentDialog}
                 >
-                    cоздать нового
+                    <Typography color='inherit'>Cоздать нового</Typography>
                 </Button>
                 <StudentDialog 
                     status={openAddNewStudentDialog} 
@@ -127,8 +128,8 @@ export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={handleClose}>Закрыть</Button>
-                <Button onClick={addStudents}>Добавить</Button>
+                <Button onClick={handleClose}><Typography color='inherit'>Закрыть</Typography></Button>
+                <Button onClick={addStudents}><Typography color='inherit'>Отправить</Typography></Button>
             </DialogActions>
         </Dialog>
     )

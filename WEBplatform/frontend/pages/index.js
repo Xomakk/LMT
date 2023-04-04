@@ -10,6 +10,7 @@ import Image from 'next/image';
 import courseImage from '../public/courses/Python.jpg'
 import addImage from '../public/add.svg'
 import { CourseDialog } from './courses/dialogs';
+import { getCookie } from '@/utils/functions';
 
 
 export const getStaticProps = async () => {
@@ -27,6 +28,8 @@ const Courses = ({ data }) => {
 
     const [courseName, setCourseName] = React.useState('');
     const [courseDuration, setCourseDuration] = React.useState('');
+    const [feedbackParams, setFeedbackParams] = React.useState([]);
+
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -38,13 +41,20 @@ const Courses = ({ data }) => {
 
     const handleAddCourse = async () => {
         try {
-            var formdata = new FormData();
-            formdata.append("name", courseName);
-            formdata.append("course_duration", courseDuration);
+            var myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            myHeaders.append("Cookie", getCookie("csrftoken"));
+
+            var raw = JSON.stringify({
+                "name": courseName,
+                "course_duration": courseDuration,
+                "feedback_params": feedbackParams,
+            })
 
             var requestOptions = {
                 method: 'POST',
-                body: formdata,
+                headers: myHeaders,
+                body: raw,
                 redirect: 'follow'
             };
 
@@ -68,7 +78,7 @@ const Courses = ({ data }) => {
 
         setCourseName('');
         setCourseDuration('');
-
+        setFeedbackParams([]);
         handleClose();
     };
 
@@ -131,7 +141,9 @@ const Courses = ({ data }) => {
                         courseName: courseName,
                         setCourseName: setCourseName,
                         courseDuration: courseDuration,
-                        setCourseDuration: setCourseDuration
+                        setCourseDuration: setCourseDuration,
+                        feedbackParams: feedbackParams,
+                        setFeedbackParams: setFeedbackParams,
                     }
                 }
             />

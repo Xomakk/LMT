@@ -17,10 +17,8 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import LayersIcon from '@mui/icons-material/Layers';
 import MuiDrawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar from '@mui/material/AppBar';
@@ -28,6 +26,8 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
+import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 
 
 
@@ -95,9 +95,15 @@ const mainListItems = (
     </ListItemButton>
     <ListItemButton href={'/attendance'}>
       <ListItemIcon>
-        <BarChartIcon />
+        <SchoolOutlinedIcon />
       </ListItemIcon>
       <ListItemText primary="Посещаемость" />
+    </ListItemButton>
+    <ListItemButton href={'/feedback'}>
+      <ListItemIcon>
+        <ChatOutlinedIcon />
+      </ListItemIcon>
+      <ListItemText primary="Обратная связь" />
     </ListItemButton>
   </React.Fragment>
 );

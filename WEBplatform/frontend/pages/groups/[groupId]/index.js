@@ -93,7 +93,7 @@ const Group = ({ data, groupId }) => {
     const [address, setAddress] = React.useState(group.address)
     const [dateFirstLesson, setDateFirstLesson] = React.useState(group.date_first_lesson.slice(0, group.date_first_lesson.indexOf('T')))
     const [timeLesson, setTimeLesson] = React.useState(group.date_first_lesson.slice(group.date_first_lesson.indexOf('T') + 1, group.date_first_lesson.indexOf('+')))
-    const [teacher, setTeacher] = React.useState(group.teacher.id)
+    const [teacher, setTeacher] = React.useState(group.teacher?.id)
     const [daysOfLessons, setDaysOfLessons] = React.useState(group.days_of_lessons.map(day => String(day)))
     const [teachers, setTeachers] = React.useState(false);
 
@@ -187,7 +187,7 @@ const Group = ({ data, groupId }) => {
                 throw new Error('Ошибка удаления группы. RESPONSE ERROR');
             }
         
-        router.push('/')
+        router.push(`/courses/${group.learning_direction}`)
     }
 
     // ------------------------------- Добавление учеников ----------------------------------------------- //
@@ -205,7 +205,7 @@ const Group = ({ data, groupId }) => {
     // ------------------------------- Рендер стринцы ---------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <IconButton size="small" sx={{borderRadius: '10%', mb: 3}} href={`/courses/${group.learning_direction.id}`}>
+            <IconButton size="small" sx={{borderRadius: '10%', mb: 3}} href={`/courses/${group.learning_direction}`}>
                 <ArrowBackIosIcon />
                 Обратно к курсу
             </IconButton>
@@ -248,7 +248,7 @@ const Group = ({ data, groupId }) => {
                                 </TableHead>
                                 <TableBody>
                                     {group.students.map((student) => (
-                                        <TableRow>
+                                        <TableRow key={student.id}>
                                             <TableCell>
                                                 <Button
                                                     variant='plain'
@@ -289,7 +289,7 @@ const Group = ({ data, groupId }) => {
                         </Button>
                     </Stack>
                 </Grid>
-                <Grid item>
+                <Grid item xs={12}>
                     <Grid container spacing={3}>
                         <Grid item lg={12}>
                             <Stack gap={2}>
