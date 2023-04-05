@@ -26,7 +26,7 @@ class LessonDaysSerializer(serializers.ModelSerializer):
 class StudentsFieldSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['id', 'name', 'lastname', 'patronymic', 'avatar', 'feedback']
+        fields = ['id', 'name', 'lastname', 'patronymic', 'avatar', 'feedback_student_list']
 
 
 class LearningGroupSerializer(serializers.ModelSerializer):

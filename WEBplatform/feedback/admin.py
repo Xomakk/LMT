@@ -1,13 +1,13 @@
 from django.contrib import admin
 
-from feedback.models import Feedback, FeedbackParam, FeedbackList, FeedbackGroupList
+from feedback.models import Feedback, FeedbackParam, FeedbackList, FeedbackGroupList, FeedbackStudentList
 
 
 @admin.register(Feedback)
 class FeedbackAdmin(admin.ModelAdmin):
-    list_display = ['comment', 'parameter', 'student', 'send_date', 'feedback_group_list']
-    list_editable = ['parameter', 'student', 'feedback_group_list']
-    list_filter = ['parameter']
+    list_display = ['feedback_student_list', 'parameter']
+    list_editable = ['parameter']
+    list_filter = ['feedback_student_list']
 
 
 @admin.register(FeedbackParam)
@@ -22,6 +22,13 @@ class FeedbackGroupListAdmin(admin.ModelAdmin):
     list_display = ['learning_group', 'feedback_list']
     list_editable = ['feedback_list']
     list_filter = ['learning_group']
+
+
+@admin.register(FeedbackStudentList)
+class FeedbackStudentListAdmin(admin.ModelAdmin):
+    list_display = ['student', 'feedback_group_list', 'send_date', 'status']
+    list_editable = ['feedback_group_list', 'status']
+    list_filter = ['feedback_group_list', 'send_date', 'status']
 
 
 @admin.register(FeedbackList)

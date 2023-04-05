@@ -1,24 +1,28 @@
-import { endpoint } from '@/utils/constants';
+import { endpoint, weekdays } from '@/utils/constants';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Link, Stack, IconButton, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead} from '@mui/material';
+import { CardActionArea, Box, Link, Stack, IconButton, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead, TableContainer, Collapse} from '@mui/material';
 import courseImage from '@/public/courses/Python.jpg'
 import { getCookie, getFullName } from '@/utils/functions';
-
+import Radio, { radioClasses } from '@mui/joy/Radio';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useRouter } from 'next/router';
 import { DeleteDialog, GroupDialog } from '@/pages/courses/dialogs';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
-import { Avatar, Button } from '@mui/joy';
+import { Avatar, Button, RadioGroup } from '@mui/joy';
 import AddIcon from '@mui/icons-material/Add';
 import { AddStudentsDialog } from './dialogs';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Image from 'next/image';
+import ChatIcon from '@mui/icons-material/Chat';
+import { FeedbackDialog } from '@/pages/feedback';
 
 export const getServerSideProps = async (context) => {
     const { groupId } = context.params;
@@ -202,6 +206,38 @@ const Group = ({ data, groupId }) => {
         setOpenAddStudentsDialog(false);
     };
 
+    // ------------------------------- Обратная связь учеников ----------------------------------------------- //
+    const [fbList, setFbList] = React.useState([]);
+    const [open, setOpen] = React.useState(false);
+    
+    const [openDialog, setOpendDialog] = React.useState(false);
+    const [studentList, setStudentList] = React.useState();
+
+    const handleOpenDialog = (student_list) => {
+        setStudentList(student_list);
+        setOpendDialog(true);
+    }
+
+    const handleCloseDialog = () => {
+        setOpendDialog(false);
+        updateData();
+    }
+
+    const getFbList = async () => {
+        const response = await fetch(`${endpoint}/feedback/list/current_group/${groupId}`);
+
+        if (!response.ok) {
+                throw new Error('Ошибка получения списка ОС по текущей группе. RESPONSE ERROR');
+            }
+        const data = await response.json()
+
+        setFbList(data);
+    }
+
+    React.useEffect(() => {
+        getFbList();
+    }, [])
+
     // ------------------------------- Рендер стринцы ---------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
@@ -235,7 +271,7 @@ const Group = ({ data, groupId }) => {
             </Stack>
 
             <Grid container spacing={3}>
-                <Grid item sx={{width: 450}}>
+                <Grid item sx={{minWidth: 450}} xs={4}>
                     <Stack gap={2}>
                         <Paper>
                             <Table>
@@ -287,6 +323,26 @@ const Group = ({ data, groupId }) => {
                                 </Typography>
                             </Stack>
                         </Button>
+                    </Stack>
+                </Grid>
+                <Grid item xs={8} >
+                    <Stack gap={2}>
+                        <TableContainer component={Paper}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Typography level='h4'>Обратная связь по группе</Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {fbList.map((group_list, index ) => (
+                                        <FeedbackRow key={group_list.id} group_list={group_list} number={index} updateData={getFbList}/>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
                     </Stack>
                 </Grid>
                 <Grid item xs={12}>
@@ -350,8 +406,156 @@ const Group = ({ data, groupId }) => {
                 updateData={UpdateGroup}
                 group={group}
             />
+            <FeedbackDialog 
+                status={openDialog}
+                handleClose={handleCloseDialog}
+                studentList={studentList}
+            />
         </Container>
     )
+}
+
+
+function FeedbackRow(props) {
+    const { group_list, updateData, number } = props;
+    const [open, setOpen] = React.useState(false);
+    
+    const [openDialog, setOpendDialog] = React.useState(false);
+    const [studentList, setStudentList] = React.useState();
+
+    const handleOpenDialog = (student_list) => {
+        setStudentList(student_list);
+        setOpendDialog(true);
+    }
+
+    const handleCloseDialog = () => {
+        setOpendDialog(false);
+        updateData();
+    }
+
+    return (
+        <React.Fragment>
+            <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                <TableCell>
+                    <Stack direction={'row'} alignItems={'center'} gap={3}>
+                        <IconButton
+                            aria-label="expand row"
+                            size="small"
+                            onClick={() => setOpen(!open)}
+                        >
+                            {open ? <KeyboardArrowUpIcon fontSize='large'/> : <KeyboardArrowDownIcon fontSize='large' />}
+                        </IconButton>
+                        <Typography level='h5' fontWeight={'normal'}>
+                            Обратная связь №{number + 1}
+                        </Typography>
+                    </Stack>
+                </TableCell>
+            </TableRow>
+            <TableRow>
+                <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
+                    <Collapse in={open} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                        <Table size="small" aria-label="purchases">
+                            <TableBody>
+                                {group_list.feedback_student_list && group_list.feedback_student_list.map((student_list) => (
+                                    <TableRow hover key={student_list.id}>
+                                        <TableCell sx={{minWidth: 200}}>
+                                            <Button
+                                                variant='plain'
+                                                color='none'
+                                                component='a'
+                                                href={`/students/${student_list.student.id}`}
+                                                sx={{
+                                                    p: 0
+                                                }}
+                                            >
+                                                <Stack direction={'row'} alignItems={'center'} spacing={2}>
+                                                    <Typography level="body1" fontWeight='bold'>
+                                                        {student_list.student.lastname} {student_list.student.name[0]}. {student_list.student.patronymic[0]}.
+                                                    </Typography>
+                                                </Stack>
+                                            </Button>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Button sx={{minWidth: 250}}
+                                                variant='outlined'
+                                                onClick={() => handleOpenDialog(student_list)}
+                                            >
+                                                <Stack direction={'row'} gap={1}>
+                                                    <ChatIcon />
+                                                    <Typography color='inherit'>открыть</Typography>
+                                                </Stack>
+                                            </Button>
+                                        </TableCell>
+                                        <TableCell>
+                                            <RadioGroup
+                                                orientation="horizontal"
+                                                variant="outlined"
+                                                value={student_list.status}
+                                                sx={{width: 313}}
+                                            >
+                                            {[10, 11, 20].map((item) => (
+                                                <Box
+                                                    key={item}
+                                                    sx={{
+                                                        position: 'relative',
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        height: 32,
+                                                        '&:not([data-first-child])': {
+                                                        borderLeft: '1px solid',
+                                                        borderColor: 'divider',
+                                                        },
+                                                        [`&[data-first-child] .${radioClasses.action}`]: {
+                                                        borderTopLeftRadius: `5px`,
+                                                        borderBottomLeftRadius: `5px`,
+                                                        },
+                                                        [`&[data-last-child] .${radioClasses.action}`]: {
+                                                        borderTopRightRadius: `5px`,
+                                                        borderBottomRightRadius: `5px`,
+                                                        },
+                                                    }}
+                                                >
+                                                    <Radio
+                                                        value={item}
+                                                        disableIcon
+                                                        overlay
+                                                        label={
+                                                            {
+                                                                11: <Typography sx={{p: 2}}>{'Проверка'}</Typography>,
+                                                                20: <Typography sx={{p: 2}}>{'Не заполнено'}</Typography>,
+                                                                10: <Typography sx={{p: 2}}>{'Принято'}</Typography>,
+                                                            }[item]
+                                                        }
+                                                        variant={student_list.status === item ? 'solid' : 'plain'}
+                                                        color={item === 20 ? 'neutral' : item === 11 ? 'warning' : 'success' }
+                                                        slotProps={{
+                                                        input: { 'aria-label': item },
+                                                        action: {
+                                                            sx: { borderRadius: 0, transition: 'none'},
+                                                        },
+                                                        }}
+                                                    />
+                                                </Box>
+                                                ))}
+                                                </RadioGroup>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                        </Box>
+                    </Collapse>
+                </TableCell>
+            </TableRow>
+            <FeedbackDialog 
+                status={openDialog}
+                handleClose={handleCloseDialog}
+                studentList={studentList}
+            />
+        </React.Fragment>
+    );
 }
 
 

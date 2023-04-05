@@ -128,15 +128,15 @@ const StudentProfile = ({ data, id }) => {
                                 <Grid container spacing={2}>
                                     <Grid item>
                                         <Stack spacing={2}>
-                                            <Typography level="h6" fontWeight={'normal'}>
+                                            {student.phone && <Typography level="h6" fontWeight={'normal'}>
                                                 Телефон:
-                                            </Typography>
-                                            <Typography level="h6" fontWeight={'normal'}>
+                                            </Typography>}
+                                            {student.email && <Typography level="h6" fontWeight={'normal'}>
                                                 Email:
-                                            </Typography>
-                                            <Typography level="h6" fontWeight={'normal'}>
+                                            </Typography>}
+                                            {student.birthday && <Typography level="h6" fontWeight={'normal'}>
                                                 День рождения:
-                                            </Typography>
+                                            </Typography>}
                                         </Stack>
                                     </Grid>
                                     <Grid item> 
@@ -185,24 +185,6 @@ const StudentProfile = ({ data, id }) => {
                                                 </CardActionArea>
                                             </Card>
                                         )) : <Typography level="h6">Нет</Typography>}
-                                    </Stack>
-                                </Card>
-                            </Stack>
-                        </Grid>
-                        <Grid item xs={8}>
-                            <Stack>
-                                <Card sx={{p: 2}}>
-                                    <Stack spacing={2}>
-                                        <Typography level="h4" mb={2}>
-                                            Обратная связь:
-                                        </Typography>
-                                        {/* { student && student.learning_group.length ? student.learning_group.map((group) => (
-                                            <Card variant="outlined" key={group.id}  sx={{p: 0}}>
-                                                <CardActionArea sx={{p: 2}} onClick={() => router.push(`/groups/${group.id}`)}>
-                                                    
-                                                </CardActionArea>
-                                            </Card>
-                                        )) : <Typography level="h6">Нет</Typography>} */}
                                     </Stack>
                                 </Card>
                             </Stack>
