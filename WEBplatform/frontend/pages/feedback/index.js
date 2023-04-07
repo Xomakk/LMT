@@ -61,18 +61,13 @@ function a11yProps(index) {
 }
 
 
-export const getStaticProps = async () => {
-    const response = await fetch(`${endpoint}/feedback/list/`);
-    const data = await response.json();
-    return {
-        props: { data },
-    }
-};
-
-
 const FeedbackList = ({ data }) => {
-    const [fblist, setFblist] = React.useState(data);
+    const [fblist, setFblist] = React.useState([]);
     const [value, setValue] = React.useState(0);
+
+    React.useEffect(() => {
+        updateFeedback();
+    }, [])
 
     const handleChange = (event, newValue) => {
         setValue(newValue);

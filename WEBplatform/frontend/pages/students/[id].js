@@ -30,9 +30,22 @@ export const getServerSideProps = async (context) => {
     }
 }
 
-const StudentProfile = ({ data, id }) => {
-    const [student, setStudent] = React.useState(data)
+const StudentProfile = () => {
     const router = useRouter();
+    const [id, setId] = React.useState();
+    const [student, setStudent] = React.useState({})
+
+    React.useEffect(() => {
+        if (router.query.id) {
+            setId(router.query.id);
+        }
+    }, [router])
+
+    React.useEffect( () => {
+        if (id) {
+            updateStudent();
+        }
+    }, [id])
     
     // обновление ученика
     const updateStudent = async () => {
@@ -148,7 +161,7 @@ const StudentProfile = ({ data, id }) => {
                                                 {student.email}
                                             </Typography>
                                             <Typography level="h6">
-                                                {student.birthday.slice(8)}.{student.birthday.slice(5, 7)}.{student.birthday.slice(0, 4)}
+                                                {student.birthday?.slice(8)}.{student.birthday?.slice(5, 7)}.{student.birthday?.slice(0, 4)}
                                             </Typography>
                                         </Stack>
                                     </Grid>
@@ -166,7 +179,7 @@ const StudentProfile = ({ data, id }) => {
                                         <Typography level="h4" mb={2}>
                                             Учебные группы:
                                         </Typography>
-                                        { student && student.learning_group.length ? student.learning_group.map((group) => (
+                                        { student && student.learning_group?.length ? student.learning_group?.map((group) => (
                                             <Card variant="outlined" key={group.id}  sx={{p: 0}}>
                                                 <CardActionArea sx={{p: 2}} onClick={() => router.push(`/groups/${group.id}`)}>
                                                     <Stack spacing={1}>

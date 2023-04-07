@@ -32,16 +32,10 @@ urlpatterns = [
     # path to groups
 
     # path to our account's app endpoints
-    # path('api/v1/auth/', include('djoser.urls')),
-    # re_path(r'^auth/', include('djoser.urls.authtoken')),
-
-    path('api-auth', include('rest_framework.urls')),
-    path(r'api/v1/auth/', include('djoser.urls')),
+    path('api/v1/auth/', include('djoser.urls')),
     re_path(r'^auth/', include('djoser.urls.authtoken')),
 
-    path('api/v1/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/v1/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/v1/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api/v1/session-auth/', include('rest_framework.urls')),
 ]
 
 if settings.DEBUG:

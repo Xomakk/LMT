@@ -31,4 +31,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'email', 'name', 'lastname', 'patronymic',  'phone']
+        fields = ['id', 'email', 'name', 'lastname', 'patronymic', 'phone']
+
+
+class UserFullSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        exclude = ['password', 'created_at', 'updated_at']

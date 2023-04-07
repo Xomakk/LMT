@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, Link, FormGroup, FormControlLabel, Checkbox, Stack, Button, IconButton, ButtonGroup} from '@mui/material';
+import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, FormGroup, FormControlLabel, Checkbox, Stack, Button, IconButton, ButtonGroup} from '@mui/material';
 import Image from 'next/image';
 import courseImage from '@/public/courses/Python.jpg'
 import addImage from '@/public/add.svg'
@@ -21,36 +21,32 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import Link from 'next/link';
 
 
-export const getServerSideProps = async (context) => {
-    const { id } = context.params;
-    const response = await fetch(`${endpoint}/directions/${id}`);
+const Course = () => {
+    const router = useRouter();
+    const [id, setId] = React.useState()
+    const [course, setCourse] = React.useState()
+    const [syllabus, setSyllabus] = React.useState()
+    const [feedbackParams, setFeedbackParams] = React.useState();
 
-    if (!response.ok) {
-        return {
-            notFound: true,
+    React.useEffect(() => {
+        if (router.query.id) {
+            setId(router.query.id);
         }
-    }
+    }, [router])
 
-    const data = await response.json();
-
-    return {
-        props: { data, id },
-    }
-};
-
-
-
-const Course = ({ data, id }) => {
-    const [course, setCourse] = React.useState(data)
-    const [syllabus, setSyllabus] = React.useState(data.syllabus)
-    const [feedbackParams, setFeedbackParams] = React.useState(course.feedback_params);
-
+    React.useEffect(() => {
+        if (id) {
+            updateCourse();
+        }
+    }, [id])
 
     // обновление курса после внесения изменений
     const updateCourse = async () => {
-        const response = await fetch(`${endpoint}/directions/${id}/`);
+        const response = await fetch(`${endpoint}/directions/${router.query.id}/`);
         const data = await response.json();
 
         if (!response.ok) {
@@ -58,6 +54,7 @@ const Course = ({ data, id }) => {
         }
         setCourse(data);
         setSyllabus(data.syllabus);
+        setFeedbackParams(data.feedback_params);
     }
 
     // ------------------------------- Добавление групп -------------------------------------------------- //
@@ -139,8 +136,8 @@ const Course = ({ data, id }) => {
 
 
     // ------------------------------- Редактирование курса ---------------------------------------------- //
-    const [courseName, setCourseName] = React.useState(course.name);
-    const [courseDuration, setCourseDuration] = React.useState(course.course_duration);
+    const [courseName, setCourseName] = React.useState(course && course.name);
+    const [courseDuration, setCourseDuration] = React.useState(course && course.course_duration);
 
     const [openEditCourseDialog, setOpenEditCourseDialog] = React.useState(false);
 
@@ -183,7 +180,6 @@ const Course = ({ data, id }) => {
 
     // удаление курса
     const [courseDeleteDeleteDialog, setCourseDeleteDialog] = React.useState(false)
-    const router = useRouter();
 
     const handleClickOpenCourseDeleteDialog = (id) => {
         setCourseDeleteDialog(true);
@@ -403,10 +399,17 @@ const Course = ({ data, id }) => {
         updateCourse();
     }
 
+    // if (!course) return <Typography>Загрузка</Typography>
 
     // ------------------------------- Рендер страницы --------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+            <Box sx={{ mb: 3 }}>
+                <Link href='/'>
+                    <ArrowBackIosIcon />
+                    Обратно к курсам
+                </Link>
+            </Box>
             <Stack
                 direction="row"
                 justifyContent="flex-start"
@@ -419,7 +422,7 @@ const Course = ({ data, id }) => {
                     color="inherit"
                     noWrap
                 >
-                    {course.name}
+                    {course && course.name}
                 </Typography>
                 <ButtonGroup>
                     <IconButton size="small" onClick={handleClickOpenEditCourseDialog}>
@@ -460,11 +463,11 @@ const Course = ({ data, id }) => {
                                             </Typography>
                                             </TableCell>
                                         <TableCell sx={{display: 'flex', justifyContent: "space-between", alignItems: "center"}}>
-                                            <Link underline='hover' target="_blank" href={`${topic.methodical_material}`}>
+                                            <a underline='hover' target="_blank" href={`${topic.methodical_material}`}>
                                                 <Typography  level="body1" color='primary' component="p">
                                                     {topic.name}
                                                 </Typography>
-                                            </Link>
+                                            </a>
                                             <ButtonGroup>
                                                 <IconButton aria-label="edit" size="small" onClick={() => {handleOpenTopicEdit(topic)}}>
                                                     <EditIcon/>
@@ -519,27 +522,27 @@ const Course = ({ data, id }) => {
                             </Grid>
                         ))}
                         <Grid item lg={4}>
-                            <Link underline='none'>
-                                <Card>
-                                    <CardActionArea sx={{ p: 2}} onClick={handleClickOpenAddGroupDialog}>
-                                        <Box display='flex' alignItems='center' gap={2}>
-                                            <Image src={addImage} 
-                                                alt="Python"
-                                                loading="lazy"
-                                                width={32}
-                                                height={32}
-                                            />
-                                            <Typography  level="h5" component="p">
-                                                Создать группу
-                                            </Typography>
-                                        </Box>
-                                    </CardActionArea>
-                                </Card>
-                            </Link>
+                            <Card>
+                                <CardActionArea sx={{ p: 2}} onClick={handleClickOpenAddGroupDialog}>
+                                    <Box display='flex' alignItems='center' gap={2}>
+                                        <Image src={addImage} 
+                                            alt="Python"
+                                            loading="lazy"
+                                            width={32}
+                                            height={32}
+                                        />
+                                        <Typography  level="h5" component="p">
+                                            Создать группу
+                                        </Typography>
+                                    </Box>
+                                </CardActionArea>
+                            </Card>
                         </Grid>
                     </Grid>
                 </Grid>
             </Grid>
+            {course && <>
+
             <GroupDialog 
                 status={openAddGroupDialog} 
                 handleClose={handleCloseAddGroupDialog} 
@@ -611,35 +614,36 @@ const Course = ({ data, id }) => {
                 }
             />
 
-            <DeleteDialog 
-                status={topicDeleteDeleteDialog} 
-                handleClose={handleCloseTopicDeleteDialog} 
-                handleAgree={handleAgree}
-            />
-            <DeleteDialog 
-                status={courseDeleteDeleteDialog} 
-                handleClose={handleCloseCourseDeleteDialog} 
-                handleAgree={handleAgreeDeleteCourse}
-            />
-            <Dialog open={openSyllabusEdit} onClose={handleCloseSyllabusEdit}>
-                <DialogTitle>Редактирование учебного плана</DialogTitle>
-                <DialogContent>
-                    <TextField
-                        autoFocus
-                        margin="dense"
-                        label="Длительность занятия"
-                        type="number"
-                        fullWidth
-                        variant="standard"
-                        value={academicHours}
-                        onChange={(e) => setAcademicHours(e.target.value)}
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseSyllabusEdit}>Закрыть</Button>
-                    <Button onClick={handleSyllabusEdit}>Отправить</Button>
-                </DialogActions>
-            </Dialog>
+                <DeleteDialog 
+                    status={topicDeleteDeleteDialog} 
+                    handleClose={handleCloseTopicDeleteDialog} 
+                    handleAgree={handleAgree}
+                />
+                <DeleteDialog 
+                    status={courseDeleteDeleteDialog} 
+                    handleClose={handleCloseCourseDeleteDialog} 
+                    handleAgree={handleAgreeDeleteCourse}
+                />
+                <Dialog open={openSyllabusEdit} onClose={handleCloseSyllabusEdit}>
+                    <DialogTitle>Редактирование учебного плана</DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            label="Длительность занятия"
+                            type="number"
+                            fullWidth
+                            variant="standard"
+                            value={academicHours}
+                            onChange={(e) => setAcademicHours(e.target.value)}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleCloseSyllabusEdit}>Закрыть</Button>
+                        <Button onClick={handleSyllabusEdit}>Отправить</Button>
+                    </DialogActions>
+                </Dialog>
+            </>}
         </Container>
     )
 }

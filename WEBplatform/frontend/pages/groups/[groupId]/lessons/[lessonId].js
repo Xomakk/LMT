@@ -5,12 +5,12 @@ import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, Link, FormGroup, FormControlLabel, Checkbox, Stack, IconButton, ButtonGroup, TableHead, Avatar} from '@mui/material';
+import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, FormGroup, FormControlLabel, Checkbox, Stack, IconButton, ButtonGroup, TableHead, Avatar} from '@mui/material';
 
 import Image from 'next/image';
 import courseImage from '@/public/courses/Python.jpg'
 import addImage from '@/public/add.svg'
-import { getCookie } from '@/utils/functions';
+import { getCookie, getFullName } from '@/utils/functions';
 
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -29,28 +29,26 @@ import MessageIcon from '@mui/icons-material/Message';
 import { DeleteDialog, GroupDialog } from '@/pages/courses/dialogs';
 import { Button } from '@mui/joy';
 import { OpenInNew } from '@mui/icons-material';
+import Link from 'next/link';
 
-export const getServerSideProps = async (context) => {
-    const { lessonId } = context.params;
-    const response = await fetch(`${endpoint}/lessons/${lessonId}/`);
 
-    if (!response.ok) {
-        return {
-            notFound: true,
+const Lesson = () => {
+    const router = useRouter();
+    const [lessonId, setLessonId] = React.useState();
+    const [lesson, setLesson] = React.useState({})
+    const [group, setGroup] = React.useState({})
+
+    React.useEffect(() => {
+        if (router.query.lessonId) {
+            setLessonId(router.query.lessonId);
         }
-    }
+    }, [router])
 
-    const data = await response.json();
-
-    return {
-        props: { data, lessonId },
-    }
-};
-
-
-const Group = ({ data, lessonId }) => {
-    const [lesson, setLesson] = React.useState(data)
-    const [group, setGroup] = React.useState(data.learning_group)
+    React.useEffect(() => {
+        if (lessonId) {
+            updateLesson();
+        }
+    }, [lessonId])
 
     // ------------------------------- Обновление данных урока ------------------------------------------- //
 
@@ -143,10 +141,12 @@ const Group = ({ data, lessonId }) => {
     // ------------------------------- Рендер стринцы ---------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <IconButton size="small" sx={{borderRadius: '15%', mb: 3}} href={`/groups/${lesson.learning_group.id}`}>
-                <ArrowBackIosIcon />
-                Обратно к группе
-            </IconButton>
+            <Box sx={{mb: 3}}>
+                <Link href={`/groups/${lesson.learning_group?.id}`}>
+                    <ArrowBackIosIcon />
+                    Обратно к группе
+                </Link>
+            </Box>
             <Stack
                 direction="row"
                 justifyContent="flex-start"
@@ -159,7 +159,7 @@ const Group = ({ data, lessonId }) => {
                     level="h2"
                     color="inherit"
                 >
-                    {lesson && lesson.topic.name}
+                    {lesson && lesson.topic?.name}
                 </Typography>
             </Stack>
 
@@ -191,13 +191,12 @@ const Group = ({ data, lessonId }) => {
                                             backgroundColor: '#ffffff'
                                             }}
                                         >
-                                            <Typography level="body1">{lesson.lesson_date.slice(8)}.{lesson.lesson_date.slice(5, 7)}.{lesson.lesson_date.slice(0, 4)}</Typography>
+                                            <Typography level="body1">{lesson.lesson_date?.slice(8)}.{lesson.lesson_date?.slice(5, 7)}.{lesson.lesson_date?.slice(0, 4)}</Typography>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {group && group.students
-                                .map((student) => {
+                                {group && group.students?.map((student) => {
                                     return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={student.id}>
                                         <TableCell align='left' sx={{position: 'sticky', 
@@ -205,25 +204,26 @@ const Group = ({ data, lessonId }) => {
                                                                     zIndex: 1, 
                                                                     left: 0,
                                                                     }}>
-                                            <Stack direction={'row'} alignItems={'center'} spacing={2}>
-                                                <IconButton
-                                                    color="neutral"
-                                                    component='a'
-                                                    href={`/students/${student.id}`}
-                                                    sx={{
-                                                        p: 0
-                                                    }}
-                                                >
-                                                    <Avatar 
-                                                        alt={`${student.lastname} ${student.name}`}
+                                            <Link href={`/students/${student.id}`}>
+                                                    <Button
+                                                        variant='plain'
+                                                        color='none'
+                                                        sx={{
+                                                            p: 0
+                                                        }}
                                                     >
-                                                        {student.lastname[0] + student.name[0]}
-                                                    </Avatar>
-                                                </IconButton>
-                                                <Typography level="body1" fontWeight='bold'>
-                                                    {student.lastname} {student.name}
-                                                </Typography>
-                                            </Stack>
+                                                        <Stack direction={'row'} alignItems={'center'} spacing={2}>
+                                                            <Avatar
+                                                                src={student.avatar}
+                                                            >
+                                                                {student.lastname[0] + student.name[0]}
+                                                            </Avatar>
+                                                            <Typography level="body1" fontWeight='bold'>
+                                                                {getFullName(student)}
+                                                            </Typography>
+                                                        </Stack>
+                                                    </Button>
+                                                </Link>
                                         </TableCell>
                                         <TableCell key={lesson.topic.id} align='center' sx={{position: 'sticky', 
                                                                     borderRight: '2px solid rgba(224, 224, 224, 1)', 
@@ -272,7 +272,7 @@ const Group = ({ data, lessonId }) => {
                         size='lg'
                         component='a'
                         target="_ blank"
-                        href={`${lesson && lesson.topic.methodical_material}`}
+                        href={`${lesson && lesson.topic?.methodical_material}`}
                         startDecorator={<OpenInNew />}
                     >
                         <Stack>
@@ -294,4 +294,4 @@ const Group = ({ data, lessonId }) => {
 }
 
 
-export default Group;
+export default Lesson;

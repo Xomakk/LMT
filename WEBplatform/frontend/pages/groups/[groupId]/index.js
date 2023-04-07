@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Link, Stack, IconButton, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead, TableContainer, Collapse} from '@mui/material';
+import { CardActionArea, Box, Stack, IconButton, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead, TableContainer, Collapse} from '@mui/material';
 import courseImage from '@/public/courses/Python.jpg'
 import { getCookie, getFullName } from '@/utils/functions';
 import Radio, { radioClasses } from '@mui/joy/Radio';
@@ -23,27 +23,13 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Image from 'next/image';
 import ChatIcon from '@mui/icons-material/Chat';
 import { FeedbackDialog } from '@/pages/feedback';
-
-export const getServerSideProps = async (context) => {
-    const { groupId } = context.params;
-    const response = await fetch(`${endpoint}/groups/${groupId}/`);
-
-    if (!response.ok) {
-        return {
-            notFound: true,
-        }
-    }
-
-    const data = await response.json();
-
-    return {
-        props: { data, groupId },
-    }
-};
+import Link from 'next/link';
 
 
-const Group = ({ data, groupId }) => {
-    const [group, setGroup] = React.useState(data)
+const Group = () => {
+    const router = useRouter();
+    const [groupId, setGroupId] = React.useState();
+    const [group, setGroup] = React.useState({})
     const [lessons, setLessons] = React.useState()
 
     const getLessons = async () => {
@@ -72,9 +58,18 @@ const Group = ({ data, groupId }) => {
         }
     }
 
+    React.useEffect(() => {
+        if (router.query.groupId) {
+            setGroupId(router.query.groupId);
+        }
+    }, [router])
+
     React.useEffect( () => {
-        getLessons();
-    }, [])
+        if (groupId) {
+            UpdateGroup();
+            getLessons();
+        }
+    }, [groupId])
 
     
     // ------------------------------- Обновление группы ------------------------------------------------- //
@@ -95,10 +90,10 @@ const Group = ({ data, groupId }) => {
     const [groupName, setGroupName] = React.useState(group.name)
     const [studyYear, setStudyYear] = React.useState(group.study_year)
     const [address, setAddress] = React.useState(group.address)
-    const [dateFirstLesson, setDateFirstLesson] = React.useState(group.date_first_lesson.slice(0, group.date_first_lesson.indexOf('T')))
-    const [timeLesson, setTimeLesson] = React.useState(group.date_first_lesson.slice(group.date_first_lesson.indexOf('T') + 1, group.date_first_lesson.indexOf('+')))
+    const [dateFirstLesson, setDateFirstLesson] = React.useState(group.date_first_lesson?.slice(0, group.date_first_lesson.indexOf('T')))
+    const [timeLesson, setTimeLesson] = React.useState(group.date_first_lesson?.slice(group.date_first_lesson.indexOf('T') + 1, group.date_first_lesson.indexOf('+')))
     const [teacher, setTeacher] = React.useState(group.teacher?.id)
-    const [daysOfLessons, setDaysOfLessons] = React.useState(group.days_of_lessons.map(day => String(day)))
+    const [daysOfLessons, setDaysOfLessons] = React.useState(group.days_of_lessons?.map(day => String(day)))
     const [teachers, setTeachers] = React.useState(false);
 
     const [openEditGroupDialog, setOpenEditGroupDialog] = React.useState(false);
@@ -160,7 +155,6 @@ const Group = ({ data, groupId }) => {
 
     // удаление группы
     const [groupDeleteDeleteDialog, setGroupDeleteDialog] = React.useState(false)
-    const router = useRouter();
 
     const handleClickOpenGroupDeleteDialog = (id) => {
         setGroupDeleteDialog(true);
@@ -235,16 +229,23 @@ const Group = ({ data, groupId }) => {
     }
 
     React.useEffect(() => {
-        getFbList();
-    }, [])
+        if (groupId) {
+            getFbList();
+        }
+    }, [groupId])
+
+
+    // if (!group) return <Typography>Загрузка</Typography>
 
     // ------------------------------- Рендер стринцы ---------------------------------------------------- //
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <IconButton size="small" sx={{borderRadius: '10%', mb: 3}} href={`/courses/${group.learning_direction}`}>
-                <ArrowBackIosIcon />
-                Обратно к курсу
-            </IconButton>
+            <Box sx={{ mb: 3 }}>
+                <Link href={`/courses/${group.learning_direction}`}>
+                    <ArrowBackIosIcon />
+                    Обратно к курсу
+                </Link>
+            </Box>
             <Stack
                 direction="row"
                 justifyContent="flex-start"
@@ -283,29 +284,29 @@ const Group = ({ data, groupId }) => {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {group.students.map((student) => (
+                                    {group.students?.map((student) => (
                                         <TableRow key={student.id}>
                                             <TableCell>
-                                                <Button
-                                                    variant='plain'
-                                                    color='none'
-                                                    component='a'
-                                                    href={`/students/${student.id}`}
-                                                    sx={{
-                                                        p: 0
-                                                    }}
-                                                >
-                                                    <Stack direction={'row'} alignItems={'center'} spacing={2}>
-                                                        <Avatar
-                                                            src={student.avatar}
-                                                        >
-                                                            {student.lastname[0] + student.name[0]}
-                                                        </Avatar>
-                                                        <Typography level="body1" fontWeight='bold'>
-                                                            {getFullName(student)}
-                                                        </Typography>
-                                                    </Stack>
-                                                </Button>
+                                                <Link href={`/students/${student.id}`}>
+                                                    <Button
+                                                        variant='plain'
+                                                        color='none'
+                                                        sx={{
+                                                            p: 0
+                                                        }}
+                                                    >
+                                                        <Stack direction={'row'} alignItems={'center'} spacing={2}>
+                                                            <Avatar
+                                                                src={student.avatar}
+                                                            >
+                                                                {student.lastname[0] + student.name[0]}
+                                                            </Avatar>
+                                                            <Typography level="body1" fontWeight='bold'>
+                                                                {getFullName(student)}
+                                                            </Typography>
+                                                        </Stack>
+                                                    </Button>
+                                                </Link>
                                             </TableCell>
                                         </TableRow>
                                     ))}
@@ -351,7 +352,7 @@ const Group = ({ data, groupId }) => {
                             <Stack gap={2}>
                                 <Box p={2} pb={0}><Typography level='h4'>План уроков</Typography></Box>
                                 {lessons && lessons.map( (lesson) => (
-                                    <Link underline='none' href={`/groups/${groupId}/lessons/${lesson.id}/`}  key={lesson.id}>
+                                    <Link href={`/groups/${groupId}/lessons/${lesson.id}/`} key={lesson.id}>
                                         <Card>
                                             <CardActionArea sx={{ p: 2}}>
                                                 <Box display='flex' alignItems='center' gap={2}>
@@ -460,21 +461,21 @@ function FeedbackRow(props) {
                                 {group_list.feedback_student_list && group_list.feedback_student_list.map((student_list) => (
                                     <TableRow hover key={student_list.id}>
                                         <TableCell sx={{minWidth: 200}}>
-                                            <Button
-                                                variant='plain'
-                                                color='none'
-                                                component='a'
-                                                href={`/students/${student_list.student.id}`}
-                                                sx={{
-                                                    p: 0
-                                                }}
-                                            >
-                                                <Stack direction={'row'} alignItems={'center'} spacing={2}>
-                                                    <Typography level="body1" fontWeight='bold'>
-                                                        {student_list.student.lastname} {student_list.student.name[0]}. {student_list.student.patronymic[0]}.
-                                                    </Typography>
-                                                </Stack>
-                                            </Button>
+                                           <Link href={`/students/${student_list.student.id}`}>
+                                                <Button
+                                                    variant='plain'
+                                                    color='none'
+                                                    sx={{
+                                                        p: 0
+                                                    }}
+                                                >
+                                                    <Stack direction={'row'} alignItems={'center'} spacing={2}>
+                                                        <Typography level="body1" fontWeight='bold'>
+                                                            {student_list.student.lastname} {student_list.student.name[0]}. {student_list.student.patronymic[0]}.
+                                                        </Typography>
+                                                    </Stack>
+                                                </Button>
+                                           </Link>
                                         </TableCell>
                                         <TableCell>
                                             <Button sx={{minWidth: 250}}

@@ -1,6 +1,6 @@
-export const localhost = 'http://127.0.0.1:8000/'
+export const host = 'http://127.0.0.1:8000/'
 export const api = 'api/v1'
-export const endpoint = `${localhost}${api}`
+export const endpoint = `${host}${api}`
 
 export const weekdays = {
     7: 'ВС',
@@ -11,3 +11,7 @@ export const weekdays = {
     2: 'ВТ',
     1: 'ПН',
 }
+
+
+export const LOGIN_PAGE = '/login'
+export const REGISTRATION_PAGE = '/signup'

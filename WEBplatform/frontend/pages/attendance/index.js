@@ -16,18 +16,12 @@ import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { green } from '@mui/material/colors';
 
 
+const Courses = () => {
+    const [courses, setCourses] = React.useState([]);
 
-export const getStaticProps = async () => {
-    const response = await fetch(`${endpoint}/directions/attendance/`);
-    const data = await response.json();
-    return {
-        props: { data },
-    }
-};
-
-
-const Courses = ({ data }) => {
-    const [courses, setCourses] = React.useState(data);
+    React.useEffect(() => {
+        updateAttandance();
+    }, [])
 
     const updateAttandance = async () => {
         const response = await fetch(`${endpoint}/directions/attendance/`);
@@ -139,7 +133,7 @@ function Row(props) {
                                     <Typography>Ученики</Typography>
                                 </TableCell>
                                 {group.lessons.map((lesson) => (
-                                    <TableCell>
+                                    <TableCell key={lesson.topic}>
                                         <Typography>{lesson.lesson_date.slice(8)}.{lesson.lesson_date.slice(5, 7)}.{lesson.lesson_date.slice(0, 4)}</Typography>
                                     </TableCell>
                                 ))}
@@ -147,7 +141,7 @@ function Row(props) {
                             </TableHead>
                             <TableBody>
                                 {group.students.map((student) => (
-                                    <TableRow>
+                                    <TableRow key={student.id}>
                                         <TableCell>
                                             <Button
                                                 variant='plain'
@@ -171,7 +165,7 @@ function Row(props) {
                                             </Button>
                                         </TableCell>
                                         {group.lessons.map((lesson) => (
-                                            <TableCell>
+                                            <TableCell key={lesson.topic}>
                                                 <Checkbox
                                                     icon={<CheckBoxOutlineBlankIcon fontSize="small" />}
                                                     checkedIcon={<CheckBoxIcon fontSize="small" />}

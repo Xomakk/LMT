@@ -11,7 +11,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Avatar, Link } from '@mui/material';
+import { Avatar } from '@mui/material';
 
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -28,7 +28,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
+import { AuthProvider } from '@/pages/_app';
+import Link from 'next/link';
 
+import style from '@/styles/components/Header.module.scss'
 
 
 const drawerWidth = 240;
@@ -81,35 +84,44 @@ const AppBar = styled(MuiAppBar, {
 
 const mainListItems = (
   <React.Fragment>
-    <ListItemButton href={'/'}>
-      <ListItemIcon>
-        <DashboardIcon />
-      </ListItemIcon>
-      <ListItemText primary="Курсы"/>
-    </ListItemButton>
-    <ListItemButton href={'/students'}>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Ученики" />
-    </ListItemButton>
-    <ListItemButton href={'/attendance'}>
-      <ListItemIcon>
-        <SchoolOutlinedIcon />
-      </ListItemIcon>
-      <ListItemText primary="Посещаемость" />
-    </ListItemButton>
-    <ListItemButton href={'/feedback'}>
-      <ListItemIcon>
-        <ChatOutlinedIcon />
-      </ListItemIcon>
-      <ListItemText primary="Обратная связь" />
-    </ListItemButton>
+    <Link href={'/'}>
+      <ListItemButton>
+        <ListItemIcon>
+          <DashboardIcon />
+        </ListItemIcon>
+        <ListItemText primary="Курсы"/>
+      </ListItemButton>
+    </Link>
+    <Link href={'/students'}>
+      <ListItemButton>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Ученики" />
+      </ListItemButton>
+    </Link>
+    <Link href={'/attendance'}>
+      <ListItemButton>
+        <ListItemIcon>
+          <SchoolOutlinedIcon />
+        </ListItemIcon>
+        <ListItemText primary="Посещаемость" />
+      </ListItemButton>
+    </Link>
+    <Link href={'/feedback'}>
+      <ListItemButton>
+        <ListItemIcon>
+          <ChatOutlinedIcon />
+        </ListItemIcon>
+        <ListItemText primary="Обратная связь" />
+      </ListItemButton>
+    </Link>
   </React.Fragment>
 );
 
 
 export default function Header({ body }) {
+
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
 
@@ -231,7 +243,7 @@ export default function Header({ body }) {
                     >
                     <MenuIcon />
                   </IconButton>
-                  <Link href='/' sx={{ flexGrow: 1 }} color="inherit" underline='none'>
+                  <Link href='/' className={style.logo} underline='none'>
                     <Typography
                         component="h1"
                         variant="h6"
@@ -314,7 +326,7 @@ export default function Header({ body }) {
           }}
         >
           <Toolbar />
-          {body}
+            {body}
         </Box>
     </Box>
   );

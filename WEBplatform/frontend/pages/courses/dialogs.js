@@ -261,7 +261,7 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
                         {errorCheckedDays && <Alert color="danger">Нужно обязательно выбрать хотя бы один день. <br/>Вы сможете отредактировать это после создания группы.</Alert>}
                         <FormGroup>
                             {days.map((option) => (
-                                <FormControlLabel key={option.value} control={<Checkbox id={option.value} checked={params.daysOfLessons.includes(option.value)} onChange={handleCheckSelectDays} />} label={option.label} />
+                                <FormControlLabel key={option.value} control={<Checkbox id={option.value} checked={params.daysOfLessons?.includes(option.value)} onChange={handleCheckSelectDays} />} label={option.label} />
                             ))}
                         </FormGroup>
                     </FormControl>

@@ -1,4 +1,4 @@
-import { AspectRatio, Card, CardContent, Container, Grid, Stack, IconButton, Typography, Link, Box, Avatar, Input, Button } from "@mui/joy";
+import { AspectRatio, Card, CardContent, Container, Grid, Stack, IconButton, Typography, Box, Avatar, Input, Button } from "@mui/joy";
 import { CardActionArea, CardMedia, Paper, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import profilePlaceholder from '@/public/profile-placeholder.png'
 import Image from "next/image";
@@ -13,17 +13,15 @@ import { getCookie, getFullName } from "@/utils/functions";
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
 import ClearOutlinedIcon from '@mui/icons-material/ClearOutlined';
 import Add from '@mui/icons-material/Add';
+import Link from "next/link";
 
-export const getStaticProps = async () => {
-    const response = await fetch(`${endpoint}/students/`);
-    const data = await response.json();
-    return {
-        props: { data },
-    }
-};
 
-const Students = ({data}) => {
-    const [students, setStudents] = React.useState(data);
+const Students = () => {
+    const [students, setStudents] = React.useState([]);
+
+    React.useEffect(() => {
+        updateStudents();
+    }, [])
 
     // обновление учеников
     const updateStudents = async () => {
@@ -50,7 +48,7 @@ const Students = ({data}) => {
     }
 
     // поиск
-    const [searchStudents, setSearchStudents] = React.useState(data);
+    const [searchStudents, setSearchStudents] = React.useState([]);
     const [searchValue, setSearchValue] = React.useState('');
 
     const handleSearchStudents = (value) => {

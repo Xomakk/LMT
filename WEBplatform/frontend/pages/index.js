@@ -5,31 +5,37 @@ import Grid from '@mui/material/Grid';
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import Typography from '@mui/joy/Typography';
-import { Box, CardActionArea, Link} from '@mui/material';
+import { Box, CardActionArea } from '@mui/material';
 import Image from 'next/image';
 import courseImage from '../public/courses/Python.jpg'
 import addImage from '../public/add.svg'
 import { CourseDialog } from './courses/dialogs';
 import { getCookie } from '@/utils/functions';
+import { CircularProgress } from '@mui/joy';
+import Link from 'next/link';
 
 
-export const getStaticProps = async () => {
-    const response = await fetch(`${endpoint}/directions/`);
-    const data = await response.json();
-    return {
-        props: { data },
-    }
-};
-
-
-const Courses = ({ data }) => {
+const Courses = () => {
     const [open, setOpen] = React.useState(false);
-    const [courses, setCourses] = React.useState(data);
+    const [courses, setCourses] = React.useState();
 
     const [courseName, setCourseName] = React.useState('');
     const [courseDuration, setCourseDuration] = React.useState('');
     const [feedbackParams, setFeedbackParams] = React.useState([]);
 
+    const updateCourses = async () => {
+        const newResponse = await fetch(`${endpoint}/directions/`);
+        const data = await newResponse.json();
+
+        if (!newResponse.ok) {
+            throw new Error('Ошибка обновления списка курсов. RESPONSE ERROR');
+        }
+        setCourses(data);
+    }
+
+    React.useEffect(() => {
+        updateCourses();
+    }, [])
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -64,13 +70,7 @@ const Courses = ({ data }) => {
                 throw new Error('Ошибка добавления курса. RESPONSE ERROR');
             }
 
-            const newResponse = await fetch(`${endpoint}/directions/`);
-            const data = await newResponse.json();
-
-            if (!newResponse.ok) {
-                throw new Error('Ошибка обновления списка курсов. RESPONSE ERROR');
-            }
-            setCourses(data);
+            updateCourses();
         }
         catch (error) {
             console.error(error);
@@ -90,7 +90,7 @@ const Courses = ({ data }) => {
             <Grid container alignItems='stretch' spacing={3} >
                 {courses && courses.map((course) => (
                     <Grid item key={course.id} lg={2}>
-                        <Link underline='none' href={`/courses/${course.id}`}>
+                        <Link href={`/courses/${course.id}`}>
                             <Card sx={{borderRadius: '10px', height: '100%'}}>
                                 <CardActionArea sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start', height: 'inherit'}}>
                                     <Box display='flex' justifyContent='center' width='inherit'>
@@ -112,7 +112,7 @@ const Courses = ({ data }) => {
                     </Grid>
                 ))}
                 <Grid item lg={2}>
-                        <Link underline='none'>
+                        <Link href={''}>
                             <Card sx={{backgroundColor: '#efefef', borderRadius: '10px', height: '100%'}}>
                                 <CardActionArea sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start', height: 'inherit'}} onClick={handleClickOpen}>
                                     <Box display='flex' justifyContent='center' width='inherit'>
