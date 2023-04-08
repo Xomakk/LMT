@@ -5,11 +5,11 @@ from rest_framework import serializers
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField()
+    re_password = serializers.CharField()
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'password2', 'name', 'lastname', 'patronymic', 'is_staff', 'phone']
+        fields = ['email', 'password', 're_password', 'name', 'lastname', 'patronymic', 'is_staff', 'phone']
 
     def save(self, *args, **kwargs):
         user = User(
@@ -20,8 +20,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             **kwargs,
         )
         password = self.validated_data['password']
-        password2 = self.validated_data['password2']
-        if password != password2:
+        re_password = self.validated_data['re_password']
+        if password != re_password:
             raise serializers.ValidationError({password: "Пароль не совпадает"})
         user.set_password(password)
         user.save()

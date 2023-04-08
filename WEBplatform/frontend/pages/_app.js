@@ -10,11 +10,10 @@ export const AuthContext = React.createContext();
 
 
 const App = ({ Component, pageProps }) => {
-    const [authToken, setAuthToken] = React.useState();
     const [user, setUser] = React.useState();
 
     return (
-        <AuthContext.Provider value={{authToken, setAuthToken, user, setUser}}>
+        <AuthContext.Provider value={{ user, setUser }}>
             <SSRProvider>
                 <Layout>
                     <AuthProvider>
