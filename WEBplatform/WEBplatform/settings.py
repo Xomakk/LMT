@@ -27,8 +27,6 @@ SECRET_KEY = "django-insecure-+2pfjo)9xk#(-%1w%61ns^=_0*f$6-a2lt5omhdjp)i8@1c$ib
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
 AUTH_USER_MODEL = 'user.User'
 
 # Application definition
@@ -133,7 +131,7 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = [
-   os.path.join(BASE_DIR, 'groups/static/')
+    os.path.join(BASE_DIR, 'groups/static/')
 ]
 STATIC_URL = "static/"
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -172,8 +170,18 @@ DJOSER = {
     }
 }
 
-
-CORS_ALLOW_ALL_ORIGINS = True
-# CORS_ORIGIN_WHITELIST = (
-#     'http://localhost:3000',
-# )
+ALLOWED_HOSTS = ['*']
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+]
+CSRF_TRUSTED_ORIGINS = [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+]
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_HTTPONLY = False  # Not accessible by client (not important)
+# CSRF_COOKIE_AGE = 8 * 3600           # Expires after 8 hr
+CSRF_COOKIE_SECURE = False  # Only HTTPS

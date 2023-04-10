@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from user.models import User
-from user.serializers import UserSerializer, UserRegisterSerializer
+from user.serializers import UserSerializer, UserRegisterSerializer, UserFullSerializer
 
 
 class UserRegistrView(CreateAPIView):
@@ -45,5 +45,5 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
 
 class CurrentUserView(APIView):
     def get(self, request):
-        serializer = UserSerializer(request.user)
+        serializer = UserFullSerializer(request.user)
         return Response(serializer.data)

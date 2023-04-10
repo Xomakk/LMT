@@ -13,9 +13,12 @@ import { CourseDialog } from './courses/dialogs';
 import { getCookie } from '@/utils/functions';
 import { CircularProgress } from '@mui/joy';
 import Link from 'next/link';
+import { AuthContext } from './_app';
 
 
 const Courses = () => {
+    const { authToken, user, setUser, setAuthToken } = React.useContext(AuthContext);
+
     const [open, setOpen] = React.useState(false);
     const [courses, setCourses] = React.useState();
 
@@ -112,24 +115,22 @@ const Courses = () => {
                     </Grid>
                 ))}
                 <Grid item lg={2}>
-                        <Link href={''}>
-                            <Card sx={{backgroundColor: '#efefef', borderRadius: '10px', height: '100%'}}>
-                                <CardActionArea sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start', height: 'inherit'}} onClick={handleClickOpen}>
-                                    <Box display='flex' justifyContent='center' width='inherit'>
-                                        <Image
-                                            width={100}
-                                            height={100}
-                                            src={addImage}
-                                            alt="Python"
-                                            loading="lazy"
-                                        />
-                                    </Box>
-                                    <Typography level="h5" width='inherit' textAlign='center' component="div" sx={{mt: 2}}>
-                                        Добавить курс
-                                    </Typography>
-                                </CardActionArea>
-                            </Card>
-                        </Link>
+                        <Card sx={{backgroundColor: '#efefef', borderRadius: '10px', height: '100%'}}>
+                            <CardActionArea sx={{ p: 3, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', alignItems: 'start', height: 'inherit'}} onClick={handleClickOpen}>
+                                <Box display='flex' justifyContent='center' width='inherit'>
+                                    <Image
+                                        width={100}
+                                        height={100}
+                                        src={addImage}
+                                        alt="Python"
+                                        loading="lazy"
+                                    />
+                                </Box>
+                                <Typography level="h5" width='inherit' textAlign='center' component="div" sx={{mt: 2}}>
+                                    Добавить курс
+                                </Typography>
+                            </CardActionArea>
+                        </Card>
                     </Grid>
             </Grid>
             <CourseDialog 

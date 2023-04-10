@@ -28,10 +28,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChatOutlinedIcon from '@mui/icons-material/ChatOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
-import { AuthProvider } from '@/pages/_app';
+import { AuthContext, AuthProvider } from '@/pages/_app';
 import Link from 'next/link';
 
 import style from '@/styles/components/Header.module.scss'
+import { getUserData, logout } from './auth';
+import { useRouter } from 'next/router';
+import { Button } from '@mui/joy';
 
 
 const drawerWidth = 240;
@@ -121,213 +124,233 @@ const mainListItems = (
 
 
 export default function Header({ body }) {
+    const { authToken, user, setUser, setAuthToken } = React.useContext(AuthContext);
+    const router = useRouter();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+    React.useEffect(() => {
+        getUserData()
+        .then(user_data => {
+            setUser(user_data);
+        })
+    }, [])
 
-  const [open, setOpen] = React.useState(true);
-    const toggleDrawer = () => {
-        setOpen(!open);
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState(null);
+
+    const [open, setOpen] = React.useState(true);
+      const toggleDrawer = () => {
+          setOpen(!open);
+      };
+
+    const isMenuOpen = Boolean(anchorEl);
+    const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+
+    const handleProfileMenuOpen = (event) => {
+      setAnchorEl(event.currentTarget);
     };
 
-  const isMenuOpen = Boolean(anchorEl);
-  const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+    const handleMobileMenuClose = () => {
+      setMobileMoreAnchorEl(null);
+    };
 
-  const handleProfileMenuOpen = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
+    const handleMenuClose = () => {
+      setAnchorEl(null);
+      handleMobileMenuClose();
+    };
 
-  const handleMobileMenuClose = () => {
-    setMobileMoreAnchorEl(null);
-  };
+    const handleMobileMenuOpen = (event) => {
+      setMobileMoreAnchorEl(event.currentTarget);
+    };
 
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-    handleMobileMenuClose();
-  };
+    const menuId = 'primary-search-account-menu';
+    const renderMenu = (
+      <Menu
+        anchorEl={anchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        id={menuId}
+        keepMounted
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open={isMenuOpen}
+        onClose={handleMenuClose}
+      >
+        <MenuItem onClick={handleMenuClose}>#Профиль</MenuItem>
+        <MenuItem onClick={() => {
+          logout();
+          router.push('/');
+          handleMenuClose();
+          setUser();
+          }}>
+            Выйти
+        </MenuItem>
+      </Menu>
+    );
 
-  const handleMobileMenuOpen = (event) => {
-    setMobileMoreAnchorEl(event.currentTarget);
-  };
-
-  const menuId = 'primary-search-account-menu';
-  const renderMenu = (
-    <Menu
-      anchorEl={anchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={menuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMenuOpen}
-      onClose={handleMenuClose}
-    >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-    </Menu>
-  );
-
-  const mobileMenuId = 'primary-search-account-menu-mobile';
-  const renderMobileMenu = (
-    <Menu
-      anchorEl={mobileMoreAnchorEl}
-      anchorOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      id={mobileMenuId}
-      keepMounted
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      open={isMobileMenuOpen}
-      onClose={handleMobileMenuClose}
-    >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
-            <MailIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
-      <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
+    const mobileMenuId = 'primary-search-account-menu-mobile';
+    const renderMobileMenu = (
+        <Menu
+          anchorEl={mobileMoreAnchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          id={mobileMenuId}
+          keepMounted
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+          }}
+          open={isMobileMenuOpen}
+          onClose={handleMobileMenuClose}
         >
-          <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
-        <p>Notifications</p>
-      </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
-    </Menu>
-  );
+          <MenuItem>
+            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+              <Badge badgeContent={4} color="error">
+                <MailIcon />
+              </Badge>
+            </IconButton>
+            <p>Messages</p>
+          </MenuItem>
+          <MenuItem>
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
+            >
+              <Badge badgeContent={17} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+            <p>Notifications</p>
+          </MenuItem>
+          <MenuItem onClick={handleProfileMenuOpen}>
+            <IconButton
+              size="large"
+              aria-label="account of current user"
+              aria-controls="primary-search-account-menu"
+              aria-haspopup="true"
+              color="inherit"
+            >
+              <AccountCircle />
+            </IconButton>
+            <p>Profile</p>
+          </MenuItem>
+        </Menu>
+    );
 
-  return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <AppBar position="absolute" open={open}>
-                <Toolbar sx={{
-                    pr: '24px', // keep right padding when drawer closed
-                    }}>
-                  <IconButton
-                    edge="start"
-                    color="inherit"
-                    aria-label="open drawer"
-                    onClick={toggleDrawer}
-                    sx={{
-                        marginRight: '36px',
-                        ...(open && { display: 'none' }),
-                    }}
-                    >
-                    <MenuIcon />
-                  </IconButton>
-                  <Link href='/' className={style.logo} underline='none'>
-                    <Typography
-                        component="h1"
-                        variant="h6"
+    return (
+          <Box sx={{ display: 'flex' }}>
+              <CssBaseline />
+              <AppBar position="absolute" open={open}>
+                  <Toolbar sx={{
+                      pr: '24px', // keep right padding when drawer closed
+                      }}>
+                    <IconButton
+                      edge="start"
+                      color="inherit"
+                      aria-label="open drawer"
+                      onClick={toggleDrawer}
+                      sx={{
+                          marginRight: '36px',
+                          ...(open && { display: 'none' }),
+                      }}
+                      >
+                      <MenuIcon />
+                    </IconButton>
+                    <Link href='/' className={style.logo} underline='none'>
+                      <Typography
+                          component="h1"
+                          variant="h6"
+                          color="inherit"
+                          noWrap
+                      >
+                          LMT
+                      </Typography>
+                    </Link>
+                    {!user && <Box sx={{ display: { xs: 'none', md: 'flex' } }} gap={1}>
+                          <Link href='/login' className={style.link}>Войти</Link>
+                          <Link href='/signup' className={style.link}>Зарегистрироваться</Link>
+                    </Box>}
+                    {!!user && <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+                        {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+                        <Badge badgeContent={22} color="error">
+                            <MailIcon />
+                        </Badge>
+                        </IconButton> */}
+                        <IconButton
+                        size="large"
+                        aria-label="show 17 new notifications"
                         color="inherit"
-                        noWrap
-                    >
-                        LMT
-                    </Typography>
-                  </Link>
-                  <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                      {/* <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-                      <Badge badgeContent={22} color="error">
-                          <MailIcon />
-                      </Badge>
-                      </IconButton> */}
-                      <IconButton
-                      size="large"
-                      aria-label="show 17 new notifications"
-                      color="inherit"
-                      >
-                      <Badge badgeContent={17} color="error">
-                          <NotificationsIcon />
-                      </Badge>
-                      </IconButton>
-                      <IconButton
-                      edge="end"
-                      aria-label="account of current user"
-                      aria-controls={menuId}
-                      onClick={handleProfileMenuOpen}
-                      color="inherit"
-                      >
-                      <Avatar alt='' src="#" />
-                      </IconButton>
-                  </Box>
-                  <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
-                          <IconButton
-                          size="large"
-                          aria-label="show more"
-                          aria-controls={mobileMenuId}
-                          aria-haspopup="true"
-                          onClick={handleMobileMenuOpen}
+                        >
+                          <Badge badgeContent={17} color="error">
+                              <NotificationsIcon />
+                          </Badge>
+                        </IconButton>
+                        <IconButton
+                          edge="end"
+                          aria-label="account of current user"
+                          aria-controls={menuId}
+                          onClick={handleProfileMenuOpen}
                           color="inherit"
                           >
-                      <MoreIcon />
+                            <Avatar alt='' src="#" />
+                        </IconButton>
+                    </Box>}
+                    <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+                            <IconButton
+                            size="large"
+                            aria-label="show more"
+                            aria-controls={mobileMenuId}
+                            aria-haspopup="true"
+                            onClick={handleMobileMenuOpen}
+                            color="inherit"
+                            >
+                        <MoreIcon />
+                        </IconButton>
+                    </Box>
+                  </Toolbar>
+              </AppBar>
+              {renderMobileMenu}
+              {renderMenu}
+              <Drawer variant="permanent" open={open}>
+                  <Toolbar
+                      sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'flex-end',
+                      px: [1],
+                      }}
+                  >
+                      <IconButton onClick={toggleDrawer}>
+                      <ChevronLeftIcon />
                       </IconButton>
-                  </Box>
-                </Toolbar>
-            </AppBar>
-            {renderMobileMenu}
-            {renderMenu}
-            <Drawer variant="permanent" open={open}>
-                <Toolbar
-                    sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'flex-end',
-                    px: [1],
-                    }}
-                >
-                    <IconButton onClick={toggleDrawer}>
-                    <ChevronLeftIcon />
-                    </IconButton>
-                </Toolbar>
-                <Divider />
-                <List component="nav">
-                    {mainListItems}
-                    <Divider sx={{ my: 1 }} />
-                </List>
-            </Drawer>
-            <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
-            {body}
-        </Box>
-    </Box>
-  );
+                  </Toolbar>
+                  <Divider />
+                  <List component="nav">
+                      {mainListItems}
+                      <Divider sx={{ my: 1 }} />
+                  </List>
+              </Drawer>
+              <Box
+            component="main"
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              height: '100vh',
+              overflow: 'auto',
+            }}
+          >
+            <Toolbar />
+              {body}
+          </Box>
+      </Box>
+    );
 }

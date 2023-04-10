@@ -32,3 +32,19 @@
     }
     &__action_list {}
 }
+
+
+.link {
+    border: 1px solid #ffffff;
+    border-radius: 5px;
+    padding: 7px 15px;
+    color: white;
+
+    &:hover {
+        background-color: #ffffff2f;
+    }
+
+    &:active {
+        background-color: #5a5a5a50;
+    }
+}

@@ -1,4 +1,5 @@
 import Layout from '@/components/Layout';
+import { getAuthToken } from '@/components/auth';
 import AuthProvider from '@/components/authProvider';
 import '@/styles/globals.scss'
 import { useRouter } from 'next/router';
@@ -12,6 +13,10 @@ export const AuthContext = React.createContext();
 const App = ({ Component, pageProps }) => {
     const [authToken, setAuthToken] = React.useState();
     const [user, setUser] = React.useState();
+
+    React.useEffect(() => {
+        console.log(authToken)
+    }, [authToken])
 
     return (
         <AuthContext.Provider value={{authToken, setAuthToken, user, setUser}}>

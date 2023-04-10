@@ -33,9 +33,9 @@ urlpatterns = [
 
     # path to our account's app endpoints
     path('api/v1/auth/', include('djoser.urls')),
-    re_path(r'^auth/', include('djoser.urls.authtoken')),
+    re_path(r'^api/v1/auth/', include('djoser.urls.authtoken')),
 
-    path('api/v1/session-auth/', include('rest_framework.urls')),
+    # path('api/v1/session-auth/', include('rest_framework.urls')),
 ]
 
 if settings.DEBUG:
