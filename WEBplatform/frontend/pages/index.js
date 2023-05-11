@@ -88,7 +88,7 @@ const Courses = () => {
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Typography  level="h2" component="div" sx={{mb: 4}}>
-                Направления обучения:
+                Направления обучения
             </Typography>
             <Grid container alignItems='stretch' spacing={3} >
                 {courses && courses.map((course) => (

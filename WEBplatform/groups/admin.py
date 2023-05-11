@@ -3,7 +3,7 @@ from django.utils.safestring import mark_safe
 
 from . import models
 
-from groups.models import LearningGroup, LessonDays, Student, Lesson, StudentLessonStatus
+from groups.models import LearningGroup, LessonDays, Student, Lesson, StudentLessonStatus, StudentComments
 
 
 class DaysInline(admin.TabularInline):
@@ -51,3 +51,9 @@ class StudentLessonStatusAdmin(admin.ModelAdmin):
 class LessonDaysAdmin(admin.ModelAdmin):
     list_display = ['id', 'day_number']
     list_editable = ['day_number']
+
+
+@admin.register(StudentComments)
+class LessonDaysAdmin(admin.ModelAdmin):
+    list_display = [ 'date', 'text', 'sender']
+    list_editable = ['text']

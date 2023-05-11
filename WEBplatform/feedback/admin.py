@@ -1,6 +1,7 @@
 from django.contrib import admin
 
-from feedback.models import Feedback, FeedbackParam, FeedbackList, FeedbackGroupList, FeedbackStudentList
+from feedback.models import Feedback, FeedbackParam, FeedbackList, FeedbackGroupList, FeedbackStudentList, \
+    GeneratedReport
 
 
 @admin.register(Feedback)
@@ -36,3 +37,9 @@ class FeedbackListAdmin(admin.ModelAdmin):
     list_display = ['date', 'responsible', 'template']
     list_editable = ['responsible', 'template']
     list_filter = ['date']
+
+
+@admin.register(GeneratedReport)
+class GeneratedReportAdmin(admin.ModelAdmin):
+    list_display = ['feedback_student_list', 'text']
+    list_filter = ['feedback_student_list']

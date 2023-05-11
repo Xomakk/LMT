@@ -5,7 +5,7 @@ import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, FormGroup, FormControlLabel, Checkbox, Stack, Button, IconButton, ButtonGroup} from '@mui/material';
+import { CardActionArea, Box, Paper, Table, TableContainer, TableBody, TableRow, TableCell, FormGroup, FormControlLabel, Checkbox, Stack, Button, ButtonGroup} from '@mui/material';
 import Image from 'next/image';
 import courseImage from '@/public/courses/Python.jpg'
 import addImage from '@/public/add.svg'
@@ -23,6 +23,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Link from 'next/link';
+import { IconButton } from '@mui/joy';
 
 
 const Course = () => {
@@ -66,19 +67,11 @@ const Course = () => {
     const [address, setAddress] = React.useState('')
     const [dateFirstLesson, setDateFirstLesson] = React.useState('2023-01-01')
     const [timeLesson, setTimeLesson] = React.useState('00:00:00')
-    const [teachers, setTeachers] = React.useState(false);
     const [teacher, setTeacher] = React.useState('')
-
+    const [curator, setCurator] = React.useState('')
+    const [groupStatus, setGroupStatus] = React.useState(10)
 
     const handleClickOpenAddGroupDialog = async () => {
-        const response = await fetch(`${endpoint}/profiles/`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error('Ошибка получения списка преподавателей. RESPONSE ERROR');
-        }
-        setTeachers(data);
-
         setOpenAddGroupDialog(true);
     };
 
@@ -99,6 +92,8 @@ const Course = () => {
                 "date_first_lesson": dateFirstLesson + " " + timeLesson,
                 "learning_direction": Number(id),
                 "teacher": teacher,
+                "curator": curator,
+                "group_status": groupStatus,
                 "days_of_lessons": daysOfLessons.map((num) => Number(num))
             });
 
@@ -129,6 +124,7 @@ const Course = () => {
         setAddress('');
         setDateFirstLesson('2023-01-01');
         setTeacher('');
+        setCurator('');
         setTimeLesson('00:00:00');
 
         handleCloseAddGroupDialog();
@@ -141,6 +137,12 @@ const Course = () => {
 
     const [openEditCourseDialog, setOpenEditCourseDialog] = React.useState(false);
 
+    React.useEffect(() => {
+        if (!!course) {
+            setCourseName(course.name)
+            setCourseDuration(course.course_duration)
+        }
+    }, [course])
 
     const handleClickOpenEditCourseDialog = () => {
         setOpenEditCourseDialog(true);
@@ -405,14 +407,14 @@ const Course = () => {
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Box sx={{ mb: 3 }}>
-                <Link href='/'>
+                <Link className='hover-link' href='/'>
                     <ArrowBackIosIcon />
                     Обратно к курсам
                 </Link>
             </Box>
             <Stack
                 direction="row"
-                justifyContent="flex-start"
+                justifyContent="space-between"
                 alignItems="center"
                 spacing={1}
                 sx={{pl: 3, mb: 4}}
@@ -424,16 +426,18 @@ const Course = () => {
                 >
                     {course && course.name}
                 </Typography>
-                <ButtonGroup>
-                    <IconButton size="small" onClick={handleClickOpenEditCourseDialog}>
-                        <EditIcon />
+                <Stack direction={'row'} spacing={1}>
+                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" onClick={handleClickOpenEditCourseDialog}>
+                        <EditIcon /> 
+                        <Typography color="inherit">Редактировать</Typography>
                     </IconButton>
-                    <IconButton size="small" onClick={handleClickOpenCourseDeleteDialog}>
-                        <DeleteIcon />
+                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" color="danger" onClick={handleClickOpenCourseDeleteDialog}>
+                        <DeleteIcon /> 
+                        <Typography color="inherit">Удалить</Typography>
                     </IconButton>
-                </ButtonGroup>
+                </Stack>
             </Stack>
-            <Grid container spacing={2}>
+            <Grid container spacing={3}>
                 <Grid item xs={12} lg={6}>
                     <TableContainer component={Paper} sx={{p: 3}}>
                         <Typography level="body1" sx={{mb: 1}}>
@@ -443,14 +447,14 @@ const Course = () => {
                             <Typography level="body1" sx={{mb: 1}}>
                                 Длительность одного занятия (часов): <Typography component='span' display='inline-block' color='primary'>{syllabus && syllabus.academic_hours} </Typography>
                             </Typography>
-                            <IconButton aria-label="edit" size="small" onClick={handleClickOpenSyllabusEdit}>
+                            <IconButton aria-label="edit" size="small" variant="plain" onClick={handleClickOpenSyllabusEdit}>
                                 <EditIcon/>
                             </IconButton>
                         </Box>
                         <Typography level="body1" sx={{mb: 4}}>
                             Всего часов обучения: <Typography component='span' display='inline-block' color='primary'>{syllabus && syllabus.topics.length * syllabus.academic_hours}</Typography>
                         </Typography>
-                        <Typography noWrap component="h1" level="h4"  sx={{mb: 1}}>
+                        <Typography noWrap level="h4"  sx={{mb: 1}}>
                                 План занятий ({syllabus && syllabus.year}):
                         </Typography>
                         <Table>
@@ -468,14 +472,14 @@ const Course = () => {
                                                     {topic.name}
                                                 </Typography>
                                             </a>
-                                            <ButtonGroup>
-                                                <IconButton aria-label="edit" size="small" onClick={() => {handleOpenTopicEdit(topic)}}>
+                                            <Stack direction={'row'} gap={0.5}>
+                                                <IconButton aria-label="edit" variant="plain" size="small" onClick={() => {handleOpenTopicEdit(topic)}}>
                                                     <EditIcon/>
                                                 </IconButton>
-                                                <IconButton aria-label="delete" size="small" onClick={() => {handleClickOpenTopicDeleteDialog(topic.id)}}>
+                                                <IconButton aria-label="delete" variant="plain" size="small" onClick={() => {handleClickOpenTopicDeleteDialog(topic.id)}}>
                                                     <DeleteIcon/>
                                                 </IconButton>
-                                            </ButtonGroup>
+                                            </Stack>
                                         </TableCell>
                                     </TableRow>
                                 ))}
@@ -499,28 +503,33 @@ const Course = () => {
                     </TableContainer>
                 </Grid>
                 <Grid item xs={12}  lg={6}>
-                    <Grid container spacing={2}>
-                        {course && course.learning_groups.map((group) => (
-                            <Grid item lg={4} key={group.id}>
-                                <Link underline='none' href={`/groups/${group.id}`}>
-                                    <Card>
-                                        <CardActionArea sx={{ p: 2}}>
-                                            <Box display='flex' alignItems='center' gap={2}>
-                                                <Image src={courseImage} 
-                                                    alt="Python"
-                                                    loading="lazy"
-                                                    width={32}
-                                                    height={32}
-                                                />
-                                                <Typography  level="h5" component="p">
-                                                    {group.name}
-                                                </Typography>
-                                            </Box>
-                                        </CardActionArea>
-                                    </Card>
-                                </Link>
-                            </Grid>
-                        ))}
+                    <Typography level='h4' mb={1}>Активные группы:</Typography>
+                    <Grid container spacing={2} mb={10}>
+                        {course && course.learning_groups.map((group) => {
+                            if (group.group_status == 10) {
+                                return (
+                                    <Grid item lg={4} key={group.id}>
+                                        <Link underline='none' href={`/groups/${group.id}`}>
+                                            <Card>
+                                                <CardActionArea sx={{ p: 2}}>
+                                                    <Box display='flex' alignItems='center' gap={2}>
+                                                        <Image src={courseImage} 
+                                                            alt="Python"
+                                                            loading="lazy"
+                                                            width={32}
+                                                            height={32}
+                                                        />
+                                                        <Typography  level="h5" component="p">
+                                                            {group.name}
+                                                        </Typography>
+                                                    </Box>
+                                                </CardActionArea>
+                                            </Card>
+                                        </Link>
+                                    </Grid>
+                                )
+                            }
+                        })}
                         <Grid item lg={4}>
                             <Card>
                                 <CardActionArea sx={{ p: 2}} onClick={handleClickOpenAddGroupDialog}>
@@ -538,6 +547,35 @@ const Course = () => {
                                 </CardActionArea>
                             </Card>
                         </Grid>
+                    </Grid>
+
+                    <Typography level='h4' mb={1}>Завершенные группы:</Typography>
+                    <Grid container spacing={2}>
+                        {course && course.learning_groups.map((group) => {
+                            if (group.group_status == 20) {
+                                return (
+                                    <Grid item lg={4} key={group.id}>
+                                        <Link underline='none' href={`/groups/${group.id}`}>
+                                            <Card>
+                                                <CardActionArea sx={{ p: 2}}>
+                                                    <Box display='flex' alignItems='center' gap={2}>
+                                                        <Image src={courseImage} 
+                                                            alt="Python"
+                                                            loading="lazy"
+                                                            width={32}
+                                                            height={32}
+                                                        />
+                                                        <Typography  level="h5" component="p" sx={{color: 'grey'}}>
+                                                            {group.name}
+                                                        </Typography>
+                                                    </Box>
+                                                </CardActionArea>
+                                            </Card>
+                                        </Link>
+                                    </Grid>
+                                )
+                            }
+                        })}
                     </Grid>
                 </Grid>
             </Grid>
@@ -561,10 +599,12 @@ const Course = () => {
                         setDateFirstLesson: setDateFirstLesson,
                         timeLesson: timeLesson,
                         setTimeLesson: setTimeLesson,
-                        teachers: teachers,
-                        setTeachers: setTeachers,
                         teacher: teacher,
-                        setTeacher: setTeacher
+                        setTeacher: setTeacher,
+                        curator: curator,
+                        setCurator: setCurator,
+                        groupStatus: groupStatus,
+                        setGroupStatus: setGroupStatus
                     }
                 }
             />

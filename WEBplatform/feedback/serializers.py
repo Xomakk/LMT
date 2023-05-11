@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
-from feedback.models import Feedback, FeedbackParam, FeedbackList, FeedbackGroupList, FeedbackStudentList
+from feedback.models import Feedback, FeedbackParam, FeedbackList, FeedbackGroupList, FeedbackStudentList, \
+    GeneratedReport
 from groups.models import Student, LearningGroup
 from groups.serializers import LearningGroupSerializer
 from user.serializers import UserSerializer
@@ -35,8 +36,14 @@ class FeedbackStudentListSerializer(serializers.ModelSerializer):
 
 
 class FeedbackStudentListFullSerializer(serializers.ModelSerializer):
+    class GeneratedReportSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = GeneratedReport
+            fields = ['id', 'text']
+
     student = StudentsFeedbackFieldSerializer(required=False, read_only=True)
     feedback = FeedbackSerializer(many=True, required=False, read_only=True)
+    generated_report = GeneratedReportSerializer(required=False, read_only=True)
 
     class Meta:
         model = FeedbackStudentList

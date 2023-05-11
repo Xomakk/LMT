@@ -1,19 +1,21 @@
 import datetime
 
 from django.utils.dateparse import parse_datetime
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.exceptions import bad_request
 
-from groups.models import LearningGroup, Student, Lesson, StudentLessonStatus, LessonDays
+from groups.models import LearningGroup, Student, Lesson, StudentLessonStatus, LessonDays, StudentComments
 from groups.signals import create_lesson
 from learningDirections.models import Topic, LearningDirection
 from user.models import User
 from user.permissions import IsAdminOrReadOnly
-from groups.serializers import LearningGroupSerializer, StudentSerializer, LessonSerializer
+from groups.serializers import LearningGroupSerializer, StudentSerializer, LessonSerializer, \
+    StudentLessonStatusSerializer
+from user.serializers import UserSerializer
 
 
 class GroupListView(ListAPIView):
@@ -30,11 +32,15 @@ def post_save_group(instance, **kwargs):
 
 
 class GroupCreateView(APIView):
+    class GroupSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = LearningGroup
+            fields = '__all__'
+
     def post(self, request, *args, **kwargs):
-        serializer = LearningGroupSerializer(data=request.data, partial=True)
+        serializer = self.GroupSerializer(data=request.data, partial=True)
         serializer.is_valid()
         group = serializer.save()
-        print(group)
         post_save_group(group)
         return Response(status=status.HTTP_200_OK)
 
@@ -68,6 +74,57 @@ class StudentDetailView(RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     # permission_classes = [IsAdminOrReadOnly, IsAuthenticated]
+
+
+class StudentCommentsView(APIView):
+    class CommentListSerializer(serializers.ModelSerializer):
+        sender = UserSerializer(read_only=True)
+
+        class Meta:
+            model = StudentComments
+            exclude = ['student']
+
+    class CommentCreateSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = StudentComments
+            fields = '__all__'
+
+    def get(self, request, **kwargs):
+        student_id = kwargs.get('pk', None)
+        if student_id:
+            comments = StudentComments.objects.filter(student=student_id).all()
+            return Response((self.CommentListSerializer(comment).data for comment in comments))
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request, **kwargs):
+        student_id = kwargs.get('pk', None)
+        print('>>>>>1', request.data)
+        if student_id:
+            try:
+                comment_id = request.data.get('id', None)
+                if comment_id:
+                    comment = StudentComments.objects.get(pk=comment_id)
+                    serializer = self.CommentCreateSerializer(comment, data=request.data, partial=True)
+                else:
+                    serializer = self.CommentCreateSerializer(data=request.data, partial=True)
+                serializer.is_valid(raise_exception=True)
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            except Exception as error:
+                return Response(bad_request(request, error))
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, **kwargs):
+        pass
+
+    def delete(self, request, **kwargs):
+        comment_id = kwargs.get('id_comment', None)
+        try:
+            comment = StudentComments.objects.get(pk=comment_id)
+            comment.delete()
+        except Exception as error:
+            return Response(error, status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
 
 
 class LessonListView(ListAPIView):

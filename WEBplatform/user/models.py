@@ -22,6 +22,10 @@ class UserManager(BaseUserManager):
         return self._create_user(email, password, is_staff=True, is_superuser=True, **kwargs)
 
 
+def make_path(instance, filename):
+    return f'avatars/user_image_{instance.id}/{filename}'
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -32,6 +36,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     lastname = models.CharField('Фамилия', max_length=255, default='Не указано', blank=True)
     patronymic = models.CharField('Отчество', max_length=255, default='Не указано', blank=True)
     phone = models.CharField('Телефон', max_length=15, null=True, blank=True)
+    birthday = models.DateField('День рождения', null=True, blank=True)
+
+    avatar = models.ImageField(upload_to=make_path, null=True, blank=True, verbose_name='Аватар')
 
     USERNAME_FIELD = 'email'
     objects = UserManager()

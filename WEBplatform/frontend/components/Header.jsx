@@ -3,7 +3,6 @@ import { styled, alpha, createTheme, ThemeProvider } from '@mui/material/styles'
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
@@ -34,7 +33,8 @@ import Link from 'next/link';
 import style from '@/styles/components/Header.module.scss'
 import { getUserData, logout } from './auth';
 import { useRouter } from 'next/router';
-import { Button } from '@mui/joy';
+import { Button, Typography } from '@mui/joy';
+import GroupsIcon from '@mui/icons-material/Groups';
 
 
 const drawerWidth = 240;
@@ -87,6 +87,8 @@ const AppBar = styled(MuiAppBar, {
 
 const mainListItems = (
   <React.Fragment>
+    <Typography level='h6' m={1} mt={2}>Обучение</Typography>
+
     <Link href={'/'}>
       <ListItemButton>
         <ListItemIcon>
@@ -117,6 +119,17 @@ const mainListItems = (
           <ChatOutlinedIcon />
         </ListItemIcon>
         <ListItemText primary="Обратная связь" />
+      </ListItemButton>
+    </Link>
+
+    <Typography level='h6' m={1} mt={2}>Управление</Typography>
+
+    <Link href={'/team'}>
+      <ListItemButton>
+        <ListItemIcon>
+          <GroupsIcon />
+        </ListItemIcon>
+        <ListItemText primary="Сотрудники" />
       </ListItemButton>
     </Link>
   </React.Fragment>
@@ -179,7 +192,10 @@ export default function Header({ body }) {
         open={isMenuOpen}
         onClose={handleMenuClose}
       >
-        <MenuItem onClick={handleMenuClose}>#Профиль</MenuItem>
+        <MenuItem onClick={() => {
+          handleMenuClose();
+          router.push(`/team/${user.id}`);
+        }}>Профиль</MenuItem>
         <MenuItem onClick={() => {
           logout();
           router.push('/');
@@ -246,26 +262,14 @@ export default function Header({ body }) {
     return (
           <Box sx={{ display: 'flex' }}>
               <CssBaseline />
-              <AppBar position="absolute" open={open}>
+              <AppBar position="absolute">
                   <Toolbar sx={{
                       pr: '24px', // keep right padding when drawer closed
                       }}>
-                    <IconButton
-                      edge="start"
-                      color="inherit"
-                      aria-label="open drawer"
-                      onClick={toggleDrawer}
-                      sx={{
-                          marginRight: '36px',
-                          ...(open && { display: 'none' }),
-                      }}
-                      >
-                      <MenuIcon />
-                    </IconButton>
                     <Link href='/' className={style.logo} underline='none'>
                       <Typography
                           component="h1"
-                          variant="h6"
+                          level="h3"
                           color="inherit"
                           noWrap
                       >
@@ -282,7 +286,7 @@ export default function Header({ body }) {
                             <MailIcon />
                         </Badge>
                         </IconButton> */}
-                        <IconButton
+                        {/* <IconButton
                         size="large"
                         aria-label="show 17 new notifications"
                         color="inherit"
@@ -290,7 +294,7 @@ export default function Header({ body }) {
                           <Badge badgeContent={17} color="error">
                               <NotificationsIcon />
                           </Badge>
-                        </IconButton>
+                        </IconButton> */}
                         <IconButton
                           edge="end"
                           aria-label="account of current user"
@@ -317,7 +321,14 @@ export default function Header({ body }) {
               </AppBar>
               {renderMobileMenu}
               {renderMenu}
-              <Drawer variant="permanent" open={open}>
+              {!!user && <Drawer
+                variant="permanent"
+                sx={{
+                  width: drawerWidth,
+                  flexShrink: 0,
+                  [`& .MuiDrawer-paper`]: { width: drawerWidth, boxSizing: 'border-box' },
+                }}
+              >
                   <Toolbar
                       sx={{
                       display: 'flex',
@@ -335,7 +346,7 @@ export default function Header({ body }) {
                       {mainListItems}
                       <Divider sx={{ my: 1 }} />
                   </List>
-              </Drawer>
+              </Drawer>}
               <Box
             component="main"
             sx={{

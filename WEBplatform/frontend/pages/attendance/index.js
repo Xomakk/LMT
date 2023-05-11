@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import * as React from 'react';
 import Card from '@mui/material/Card';
 import Typography from '@mui/joy/Typography';
-import { Box, CardActionArea, Checkbox, Collapse, Link, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import { Box, CardActionArea, Checkbox, Collapse, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import Image from 'next/image';
 import { Avatar, Button, IconButton, Stack } from '@mui/joy';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -14,6 +14,7 @@ import { getCookie, getFullName } from '@/utils/functions';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { green } from '@mui/material/colors';
+import Link from 'next/link';
 
 
 const Courses = () => {
@@ -39,7 +40,7 @@ const Courses = () => {
                     <Grid item xs={12} key={course.id}>
                         <TableContainer component={Paper}>
                             <Stack>
-                                <Typography level='h3' sx={{m: 2}}>
+                                <Typography level='h4' sx={{m: 2}}>
                                     <Link color={'inherit'} underline='none' href={`courses/${course.id}`}>{course.name}</Link>
                                 </Typography>
                                 <Table>
@@ -143,15 +144,7 @@ function Row(props) {
                                 {group.students.map((student) => (
                                     <TableRow key={student.id}>
                                         <TableCell>
-                                            <Button
-                                                variant='plain'
-                                                color='none'
-                                                component='a'
-                                                href={`/students/${student.id}`}
-                                                sx={{
-                                                    p: 0
-                                                }}
-                                            >
+                                            <Link href={`/students/${student.id}`}>
                                                 <Stack direction={'row'} alignItems={'center'} spacing={2}>
                                                     <Avatar
                                                         src={student.avatar}
@@ -162,7 +155,7 @@ function Row(props) {
                                                         {getFullName(student)}
                                                     </Typography>
                                                 </Stack>
-                                            </Button>
+                                            </Link>
                                         </TableCell>
                                         {group.lessons.map((lesson) => (
                                             <TableCell key={lesson.topic}>

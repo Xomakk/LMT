@@ -1,3 +1,5 @@
+from django.contrib.auth.models import Group
+
 import learningDirections
 # from learningDirections.serializers import learningDirectionSerializer
 from user.models import User
@@ -28,13 +30,15 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+class GroupsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['id', 'name']
+
+
 class UserSerializer(serializers.ModelSerializer):
+    # groups = GroupsSerializer(many=True, required=False)
+
     class Meta:
         model = User
-        fields = ['id', 'email', 'name', 'lastname', 'patronymic', 'phone']
-
-
-class UserFullSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = User
-        exclude = ['password', 'created_at', 'updated_at']
+        exclude = ['password', 'created_at', 'updated_at', 'is_superuser', 'is_staff']

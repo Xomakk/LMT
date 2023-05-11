@@ -3,10 +3,9 @@ import datetime
 from django.db import models
 
 
-# Направление обучения
 class LearningDirection(models.Model):
     name = models.CharField('Название', max_length=50, default='Не указано')
-    course_duration = models.IntegerField('Длительность курса (в годах)', default=1)
+    course_duration = models.IntegerField('Длительность курса (в месяцах)', default=9)
 
     class Meta:
         verbose_name = 'Направление обучения'
@@ -17,7 +16,6 @@ class LearningDirection(models.Model):
         return f'{self.name} | Продолжительность: {self.course_duration} год(а)'
 
 
-# программа обучения
 class Syllabus(models.Model):
     year = models.IntegerField('Год', default=datetime.date.today().year)
     academic_hours = models.IntegerField(default=1)
@@ -32,7 +30,6 @@ class Syllabus(models.Model):
         return f'{self.year} | {self.learning_direction.name}'
 
 
-# Тема в программе обучения
 class Topic(models.Model):
     number = models.IntegerField('Номер урока', default=0)
     name = models.CharField(max_length=256, default='Тема не задана')

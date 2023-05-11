@@ -5,9 +5,9 @@ import Card from '@mui/material/Card';
 
 import * as React from 'react';
 import Typography from '@mui/joy/Typography';
-import { CardActionArea, Box, Stack, IconButton, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead, TableContainer, Collapse} from '@mui/material';
+import { CardActionArea, Box, Stack, ButtonGroup, TableBody, TableCell, Table, TableRow, Paper, TableHead, TableContainer, Collapse} from '@mui/material';
 import courseImage from '@/public/courses/Python.jpg'
-import { getCookie, getFullName } from '@/utils/functions';
+import { downloadReport, getCookie, getFullName } from '@/utils/functions';
 import Radio, { radioClasses } from '@mui/joy/Radio';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,15 +15,16 @@ import { useRouter } from 'next/router';
 import { DeleteDialog, GroupDialog } from '@/pages/courses/dialogs';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
-import { Avatar, Button, RadioGroup } from '@mui/joy';
+import { Avatar, Button, IconButton, RadioGroup } from '@mui/joy';
 import AddIcon from '@mui/icons-material/Add';
 import { AddStudentsDialog } from './dialogs';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Image from 'next/image';
 import ChatIcon from '@mui/icons-material/Chat';
-import { FeedbackDialog } from '@/pages/feedback';
+import { FeedbackDialog, StudentListRow } from '@/pages/feedback';
 import Link from 'next/link';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 
 const Group = () => {
@@ -93,21 +94,28 @@ const Group = () => {
     const [dateFirstLesson, setDateFirstLesson] = React.useState(group.date_first_lesson?.slice(0, group.date_first_lesson.indexOf('T')))
     const [timeLesson, setTimeLesson] = React.useState(group.date_first_lesson?.slice(group.date_first_lesson.indexOf('T') + 1, group.date_first_lesson.indexOf('+')))
     const [teacher, setTeacher] = React.useState(group.teacher?.id)
+    const [curator, setCurator] = React.useState(group.curator?.id)
     const [daysOfLessons, setDaysOfLessons] = React.useState(group.days_of_lessons?.map(day => String(day)))
-    const [teachers, setTeachers] = React.useState(false);
+    const [groupStatus, setGroupStatus] = React.useState(group.group_status)
 
     const [openEditGroupDialog, setOpenEditGroupDialog] = React.useState(false);
 
+    React.useEffect(() => {
+        if (group) {
+            setGroupName(group.name);
+            setStudyYear(group.study_year);
+            setAddress(group.address);
+            setDateFirstLesson(group.date_first_lesson?.slice(0, group.date_first_lesson.indexOf('T')));
+            setTimeLesson(group.date_first_lesson?.slice(group.date_first_lesson.indexOf('T') + 1, group.date_first_lesson.indexOf('+')));
+            setTeacher(group.teacher?.id);
+            setCurator(group.curator?.id);
+            setGroupStatus(group.group_status);
+            setDaysOfLessons(group.days_of_lessons?.map(day => String(day)));
+        }
+    }, [group])
+
 
     const handleClickOpenEditGroupDialog = async () => {
-        const response = await fetch(`${endpoint}/profiles/`);
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error('Ошибка получения списка преподавателей. RESPONSE ERROR');
-        }
-        setTeachers(data);
-
         setOpenEditGroupDialog(true);
     };
 
@@ -127,6 +135,8 @@ const Group = () => {
                 "address": address,
                 "date_first_lesson": dateFirstLesson + " " + timeLesson,
                 "teacher": teacher,
+                "curator": curator,
+                "group_status": groupStatus,
                 "days_of_lessons": daysOfLessons.map((num) => Number(num))
             });
 
@@ -218,7 +228,7 @@ const Group = () => {
     }
 
     const getFbList = async () => {
-        const response = await fetch(`${endpoint}/feedback/list/current_group/${groupId}`);
+        const response = await fetch(`${endpoint}/feedback/list/current_group/${groupId}/`);
 
         if (!response.ok) {
                 throw new Error('Ошибка получения списка ОС по текущей группе. RESPONSE ERROR');
@@ -241,14 +251,14 @@ const Group = () => {
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
             <Box sx={{ mb: 3 }}>
-                <Link href={`/courses/${group.learning_direction}`}>
+                <Link className='hover-link' href={`/courses/${group.learning_direction}`}>
                     <ArrowBackIosIcon />
                     Обратно к курсу
                 </Link>
             </Box>
             <Stack
                 direction="row"
-                justifyContent="flex-start"
+                justifyContent="space-between"
                 alignItems="center"
                 spacing={1}
                 sx={{pl: 3, mb: 4}}
@@ -261,14 +271,17 @@ const Group = () => {
                 >
                     {group.name}
                 </Typography>
-                <ButtonGroup>
-                    <IconButton size="small" onClick={handleClickOpenEditGroupDialog}>
-                        <EditIcon />
+                    
+                <Stack direction={'row'} spacing={1}>
+                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" onClick={handleClickOpenEditGroupDialog}>
+                        <EditIcon /> 
+                        <Typography color="inherit">Редактировать</Typography>
                     </IconButton>
-                    <IconButton size="small" onClick={handleClickOpenGroupDeleteDialog}>
-                        <DeleteIcon />
+                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" color="danger" onClick={handleClickOpenGroupDeleteDialog}>
+                        <DeleteIcon /> 
+                        <Typography color="inherit">Удалить</Typography>
                     </IconButton>
-                </ButtonGroup>
+                </Stack>
             </Stack>
 
             <Grid container spacing={3}>
@@ -333,7 +346,16 @@ const Group = () => {
                                 <TableHead>
                                     <TableRow>
                                         <TableCell>
-                                            <Typography level='h4'>Обратная связь по группе</Typography>
+                                            <Stack direction={'row'} gap={2} justifyContent={'space-between'}>
+                                                <Typography level='h4'>Обратная связь по группе</Typography>
+                                                <Button
+                                                    sx={{maxWidth: '300px'}}
+                                                    startDecorator={<FileDownloadIcon />}
+                                                    onClick={() => downloadReport(`feedback/report/group/${group.id}`)}
+                                                >
+                                                    Скачать
+                                                </Button>
+                                            </Stack>
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -389,10 +411,12 @@ const Group = () => {
                         setDateFirstLesson: setDateFirstLesson,
                         timeLesson: timeLesson,
                         setTimeLesson: setTimeLesson,
-                        teachers: teachers,
-                        setTeachers: setTeachers,
                         teacher: teacher,
-                        setTeacher: setTeacher
+                        setTeacher: setTeacher,
+                        curator: curator,
+                        setCurator: setCurator,
+                        groupStatus: groupStatus,
+                        setGroupStatus: setGroupStatus
                     }
                 }
             />
@@ -421,19 +445,6 @@ function FeedbackRow(props) {
     const { group_list, updateData, number } = props;
     const [open, setOpen] = React.useState(false);
     
-    const [openDialog, setOpendDialog] = React.useState(false);
-    const [studentList, setStudentList] = React.useState();
-
-    const handleOpenDialog = (student_list) => {
-        setStudentList(student_list);
-        setOpendDialog(true);
-    }
-
-    const handleCloseDialog = () => {
-        setOpendDialog(false);
-        updateData();
-    }
-
     return (
         <React.Fragment>
             <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -459,90 +470,7 @@ function FeedbackRow(props) {
                         <Table size="small" aria-label="purchases">
                             <TableBody>
                                 {group_list.feedback_student_list && group_list.feedback_student_list.map((student_list) => (
-                                    <TableRow hover key={student_list.id}>
-                                        <TableCell sx={{minWidth: 200}}>
-                                           <Link href={`/students/${student_list.student.id}`}>
-                                                <Button
-                                                    variant='plain'
-                                                    color='none'
-                                                    sx={{
-                                                        p: 0
-                                                    }}
-                                                >
-                                                    <Stack direction={'row'} alignItems={'center'} spacing={2}>
-                                                        <Typography level="body1" fontWeight='bold'>
-                                                            {student_list.student.lastname} {student_list.student.name[0]}. {student_list.student.patronymic[0]}.
-                                                        </Typography>
-                                                    </Stack>
-                                                </Button>
-                                           </Link>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Button sx={{minWidth: 250}}
-                                                variant='outlined'
-                                                onClick={() => handleOpenDialog(student_list)}
-                                            >
-                                                <Stack direction={'row'} gap={1}>
-                                                    <ChatIcon />
-                                                    <Typography color='inherit'>открыть</Typography>
-                                                </Stack>
-                                            </Button>
-                                        </TableCell>
-                                        <TableCell>
-                                            <RadioGroup
-                                                orientation="horizontal"
-                                                variant="outlined"
-                                                value={student_list.status}
-                                                sx={{width: 313}}
-                                            >
-                                            {[10, 11, 20].map((item) => (
-                                                <Box
-                                                    key={item}
-                                                    sx={{
-                                                        position: 'relative',
-                                                        display: 'flex',
-                                                        justifyContent: 'center',
-                                                        alignItems: 'center',
-                                                        height: 32,
-                                                        '&:not([data-first-child])': {
-                                                        borderLeft: '1px solid',
-                                                        borderColor: 'divider',
-                                                        },
-                                                        [`&[data-first-child] .${radioClasses.action}`]: {
-                                                        borderTopLeftRadius: `5px`,
-                                                        borderBottomLeftRadius: `5px`,
-                                                        },
-                                                        [`&[data-last-child] .${radioClasses.action}`]: {
-                                                        borderTopRightRadius: `5px`,
-                                                        borderBottomRightRadius: `5px`,
-                                                        },
-                                                    }}
-                                                >
-                                                    <Radio
-                                                        value={item}
-                                                        disableIcon
-                                                        overlay
-                                                        label={
-                                                            {
-                                                                11: <Typography sx={{p: 2}}>{'Проверка'}</Typography>,
-                                                                20: <Typography sx={{p: 2}}>{'Не заполнено'}</Typography>,
-                                                                10: <Typography sx={{p: 2}}>{'Принято'}</Typography>,
-                                                            }[item]
-                                                        }
-                                                        variant={student_list.status === item ? 'solid' : 'plain'}
-                                                        color={item === 20 ? 'neutral' : item === 11 ? 'warning' : 'success' }
-                                                        slotProps={{
-                                                        input: { 'aria-label': item },
-                                                        action: {
-                                                            sx: { borderRadius: 0, transition: 'none'},
-                                                        },
-                                                        }}
-                                                    />
-                                                </Box>
-                                                ))}
-                                                </RadioGroup>
-                                        </TableCell>
-                                    </TableRow>
+                                    <StudentListRow key={student_list.id} studentList={student_list}/>
                                 ))}
                             </TableBody>
                         </Table>
@@ -550,11 +478,6 @@ function FeedbackRow(props) {
                     </Collapse>
                 </TableCell>
             </TableRow>
-            <FeedbackDialog 
-                status={openDialog}
-                handleClose={handleCloseDialog}
-                studentList={studentList}
-            />
         </React.Fragment>
     );
 }

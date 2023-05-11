@@ -32,6 +32,7 @@ class StudentsFieldSerializer(serializers.ModelSerializer):
 class LearningGroupSerializer(serializers.ModelSerializer):
     students = StudentsFieldSerializer(many=True, required=False)
     teacher = UserSerializer(required=False, read_only=True)
+    curator = UserSerializer(required=False, read_only=True)
 
     class Meta:
         model = LearningGroup

@@ -244,7 +244,7 @@ const Lesson = () => {
                                                         color="success"
                                                         sx={{ '& .MuiSvgIcon-root': { fontSize: 24 } }}
                                                     />
-                                                    <IconButton
+                                                    {/* <IconButton
                                                         onClick={() => handleOpenCommentDialog(
                                                             {
                                                                 comment: lesson ? lesson.student_lesson_status.filter((item) => item.student === student.id)[0].comment : '', 
@@ -255,7 +255,7 @@ const Lesson = () => {
                                                         )}
                                                     >
                                                         <MessageIcon />
-                                                    </IconButton>
+                                                    </IconButton> */}
                                                 </ButtonGroup>
                                         </TableCell>
                                     </TableRow>

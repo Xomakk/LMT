@@ -34,7 +34,6 @@ def create_lesson(topic, group):
     return lesson
 
 
-# при создании занятия в плане обучения
 @receiver(post_save, sender=Topic)
 def post_save_topic(created, instance, **kwargs):
     if created:
@@ -43,13 +42,3 @@ def post_save_topic(created, instance, **kwargs):
         groups = learning_direction.learning_groups.all()
         for group in groups:
             create_lesson(instance, group)
-
-    # # при создании урока создаются статусы для всех учеников
-# @receiver(post_save, sender=Lesson)
-# def post_save_lesson(created, instance, **kwargs):
-#     if created:
-#         for student in instance.learning_group.students.all():
-#             student_status = StudentLessonStatus.objects.create(
-#                 lesson=instance,
-#                 student=student
-#             )

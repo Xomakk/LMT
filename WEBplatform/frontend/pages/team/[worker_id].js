@@ -6,66 +6,68 @@ import * as React from 'react';
 import { endpoint, weekdays } from "@/utils/constants";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { StudentDialog } from "./dialogs";
+import { WorkerDialog } from "./dialogs";
 import { useRouter } from "next/router";
 import { DeleteDialog } from "../courses/dialogs";
-import { fetchData, getCookie, getFullName, downloadReport } from "@/utils/functions";
+import { getCookie, getFullName } from "@/utils/functions";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Link from "next/link";
 import SendIcon from '@mui/icons-material/Send';
 import { AuthContext } from "../_app";
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 
-const StudentProfile = () => {
+
+const WorkerProfile = () => {
     const router = useRouter();
     const [id, setId] = React.useState();
-    const [student, setStudent] = React.useState({})
+    const [worker, setWorker] = React.useState({})
+    const { user } = React.useContext(AuthContext);
+
 
     React.useEffect(() => {
-        if (router.query.id) {
-            setId(router.query.id);
+        if (router.query.worker_id) {
+            setId(router.query.worker_id);
         }
     }, [router])
 
     React.useEffect( () => {
         if (id) {
-            updateStudent();
+            updateWorker();
         }
     }, [id])
     
-    // обновление ученика
-    const updateStudent = async () => {
-        const response = await fetch(`${endpoint}/students/${id}/`);
+    // обновление сотрудника
+    const updateWorker = async () => {
+        const response = await fetch(`${endpoint}/profiles/${id}/`);
 
         if (!response.ok) {
             throw new Error('Ошибка обновления профиля студента. RESPONSE ERROR');
         }
 
         const data = await response.json();
-        setStudent(data);
+        setWorker(data);
     }
 
-    // диалог редактирования профиля ученика
-    const [openStudentDialog, setOpenStudentDialog] = React.useState(false);
+    // диалог редактирования профиля сотрудника
+    const [openWorkerDialog, setOpenWorkerDialog] = React.useState(false);
     
-    const hangldeOpenStudentDialog = () => {
-        setOpenStudentDialog(true);
+    const hangldeOpenWorkerDialog = () => {
+        setOpenWorkerDialog(true);
     }
 
-    const handleCloseStudentDialog = () => {
-        setOpenStudentDialog(false);
+    const handleCloseWorkerDialog = () => {
+        setOpenWorkerDialog(false);
     }
 
-    // удаление ученика
+    // удаление сотрудника
     const [openDeletDialog, setOpenDeletDialog] = React.useState(false);
 
     const handleAgreeDelete = () => {
         handleCloseDelete();
-        handleDeleteStudent();
+        handleDeleteWorker();
     }
 
-    const handleDeleteStudent = async () => {
+    const handleDeleteWorker = async () => {
         var myHeaders = new Headers();
             myHeaders.append("Cookie", getCookie("csrftoken"));
 
@@ -75,13 +77,13 @@ const StudentProfile = () => {
                 redirect: 'follow'
             };
 
-        const response = await fetch(`${endpoint}/students/${student.id}/`, requestOptions)
+        const response = await fetch(`${endpoint}/workers/${worker.id}/`, requestOptions)
 
         if (!response.ok) {
                 throw new Error('Ошибка удаления студента. RESPONSE ERROR');
             }
         
-        router.push('/students')
+        router.push('/workers')
     }
 
     const handleCloseDelete = () => {
@@ -92,146 +94,33 @@ const StudentProfile = () => {
         setOpenDeletDialog(true);
     }
 
-    // получение комментариев по ученику
-    const [comments, setComments] = React.useState([])
-
-    React.useEffect(() => {
-        if (!!id) {
-            getCommentsForStudent();
-        }
-    }, [id])
-
-
-    const getCommentsForStudent = async () => {
-        const response = await fetch(`${endpoint}/students/${id}/comments/`);
-
-        if (!response.ok) {
-            throw new Error('Ошибка обновления профиля студента. RESPONSE ERROR');
-        }
-
-        const data = await response.json();
-        setComments(data);
-    }
-
-    // добавление комментария
-    const { user } = React.useContext(AuthContext);
-    const [studentComment, setStudentComment] = React.useState('');
-
-    const handleAddComment = async () => {
-        var myHeaders = new Headers();
-            myHeaders.append("Content-Type", "application/json");
-            myHeaders.append("Cookie", getCookie("csrftoken"));
-
-        var raw = JSON.stringify({
-                "sender": user.id,
-                "student": id,
-                "text": studentComment,
-                "id": commentId
-            });
-
-        var requestOptions = {
-                method: 'POST',
-                headers: myHeaders,
-                body: raw,
-                redirect: 'follow'
-            };
-        
-
-        const response = await fetch(`${endpoint}/students/${id}/comments/`, requestOptions)
-
-        if (!response.ok) {
-                throw new Error('Ошибка добавления комментария. RESPONSE ERROR');
-            }
-        
-        setStudentComment('');
-        setCommentId();
-        getCommentsForStudent();
-    }
-
-    // удаление комментария
-    const [commentDeleteDialog, setCommentDeleteDialog] = React.useState(false)
-    const [commentDeleteId, setCommentDeleteId] = React.useState()
-
-
-    const handleClickOpenCommentDeleteDialog = (id) => {
-        setCommentDeleteId(id);
-        setCommentDeleteDialog(true);
-    };
-
-    const handleCloseCommentDeleteDialog = () => {
-        setCommentDeleteDialog(false);
-    };
-
-    const handleCommentAgree = () => {
-        handleCloseCommentDeleteDialog();
-        handleDeleteComment();
-    }
-
-    const handleDeleteComment = async () => {
-        var myHeaders = new Headers();
-            myHeaders.append("Cookie", getCookie("csrftoken"));
-
-        var requestOptions = {
-                method: 'DELETE',
-                headers: myHeaders,
-                redirect: 'follow'
-            };
-        
-        if (!commentDeleteId) {
-            throw new Error('id комментария небыл указан.')
-        }
-
-        const response = await fetch(`${endpoint}/students/${id}/comments/${commentDeleteId}/`, requestOptions)
-
-        if (!response.ok) {
-                throw new Error('Ошибка удаления комментария. RESPONSE ERROR');
-            }
-        
-        setCommentId();
-        getCommentsForStudent();
-    }
-
-    // редактирование комментария
-    const [commentId, setCommentId] = React.useState()
-
-    const handleEditComment = (comment) => {
-        setCommentId(comment.id);
-        setStudentComment(comment.text);
-    }
-
-    const handleCansleEditComment = () => {
-        setCommentId();
-        setStudentComment('');
-    }
-
-
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4}}>
-            <Box>
-                <Link className="hover-link" href={`/students`}>
+            <Box  mb={2}>
+                <Link className="hover-link" href={`/team`}>
                     <ArrowBackIosIcon />
-                    К списку учеников
+                    К списку сотрудников
                 </Link>
             </Box>
-            <Stack alignItems={'flex-end'} mb={1}>
+            {user?.id == id && <Stack alignItems={'flex-end'} mb={1}>
                 <Stack direction={'row'} spacing={1}>
-                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" onClick={hangldeOpenStudentDialog}>
+                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" onClick={hangldeOpenWorkerDialog}>
                         <EditIcon /> 
                         <Typography color="inherit">Редактировать</Typography>
                     </IconButton>
-                    <IconButton sx={{gap: 1, p: 1}} variant="outlined" color="danger" onClick={handleOpenDelete}>
+                    {/* <IconButton sx={{gap: 1, p: 1}} variant="outlined" color="danger" onClick={handleOpenDelete}>
                         <DeleteIcon /> 
                         <Typography color="inherit">Удалить</Typography>
-                    </IconButton>
+                    </IconButton> */}
                 </Stack>
-            </Stack>
+            </Stack>}
             <Grid container spacing={3}>
                 <Grid item xs={12}>
                     <Stack direction={'row'} spacing={3}>
                         <Card sx={{p: 2}}>
                             <AspectRatio ratio='3/4' minHeight={300} sx={{minWidth: '250px'}}>
                                 <Image
-                                    src={student && student.avatar? student.avatar : profilePlaceholder}
+                                    src={worker && worker.avatar? worker.avatar : profilePlaceholder}
                                     width={300}
                                     height={300}
                                     alt="Python"
@@ -242,7 +131,7 @@ const StudentProfile = () => {
                         <Card  sx={{p: 2, width: '100%' }}>
                             <CardContent>
                                 <Typography level="h2" sx={{mb: 3, ml: 1}}>
-                                    {student && getFullName(student) }
+                                    {worker && getFullName(worker) }
                                 </Typography>
                                 <Grid container spacing={2}>
                                     <Grid item>
@@ -261,37 +150,28 @@ const StudentProfile = () => {
                                     <Grid item> 
                                         <Stack spacing={2}>
                                             <Typography level="h6">
-                                                {student.phone ? student.phone : 'не указано'}
+                                                {worker.phone ? worker.phone : 'не указано'}
                                             </Typography>
                                             <Typography level="h6">
-                                                {student.email ? student.email : 'не указано'}
+                                                {worker.email ? worker.email : 'не указано'}
                                             </Typography>
                                             <Typography level="h6">
-                                                {student.birthday ? `${student.birthday?.slice(8)}.${student.birthday?.slice(5, 7)}.${student.birthday?.slice(0, 4)}` : 'не указано' }
+                                                {worker.birthday ? `${worker.birthday?.slice(8)}.${worker.birthday?.slice(5, 7)}.${worker.birthday?.slice(0, 4)}` : 'не указано' }
                                             </Typography>
                                         </Stack>
                                     </Grid>
                                 </Grid>
                             </CardContent>
-                            <CardContent sx={{justifyContent: 'flex-end'}}>
-                                <Button
-                                    sx={{maxWidth: '300px'}}
-                                    startDecorator={<FileDownloadIcon />}
-                                    onClick={() => downloadReport(`feedback/report/student/${student.id}`)}
-                                >
-                                    Скачать отчет по обратной связи
-                                </Button>
-                            </CardContent>
                         </Card>
                     </Stack>
                 </Grid>
                 <Grid item xs={4}>
-                    <Card sx={{p: 2}}>
+                    {/* <Card sx={{p: 2}}>
                         <Stack spacing={2}>
                             <Typography level="h4" mb={2}>
                                 Учебные группы:
                             </Typography>
-                            { student && student.learning_group?.length ? student.learning_group?.map((group) => (
+                            { worker && worker.learning_group?.length ? worker.learning_group?.map((group) => (
                                 <Card variant="outlined" key={group.id}  sx={{p: 0}}>
                                     <CardActionArea sx={{p: 2}} onClick={() => router.push(`/groups/${group.id}`)}>
                                         <Stack spacing={1}>
@@ -311,9 +191,9 @@ const StudentProfile = () => {
                                 </Card>
                             )) : <Typography level="h6">Нет</Typography>}
                         </Stack>
-                    </Card>
+                    </Card> */}
                 </Grid>
-                <Grid item xs={8}>
+                {/* <Grid item xs={8}>
                     <Card sx={{p: 2}}>
                         <Stack spacing={2}>
                             <Typography level="h4" mb={2}>
@@ -351,8 +231,8 @@ const StudentProfile = () => {
                                     {commentId && <Typography level="body1" color="primary">Редактирование сообщения:</Typography>}
                                 <Stack pt={2} spacing={1} direction={'row'} alignItems={'start'}>
                                     <Textarea 
-                                        value={studentComment}
-                                        onChange={(e) => setStudentComment(e.target.value)}
+                                        value={workerComment}
+                                        onChange={(e) => setWorkerComment(e.target.value)}
                                         minRows={commentId ? 3 : 1}
                                         sx={{width: '100%'}}
                                     />
@@ -364,14 +244,14 @@ const StudentProfile = () => {
                             </Stack>
                         </Stack>
                     </Card>
-                </Grid>
+                </Grid> */}
             </Grid>
-            <StudentDialog 
-                status={openStudentDialog} 
-                handleClose={handleCloseStudentDialog} 
-                updateData={updateStudent}
+            {/* <WorkerDialog 
+                status={openWorkerDialog} 
+                handleClose={handleCloseWorkerDialog} 
+                updateData={updateWorker}
                 adding={false}
-                student={student}
+                worker={worker}
             />
             <DeleteDialog 
                 status={openDeletDialog} 
@@ -382,9 +262,9 @@ const StudentProfile = () => {
                 status={commentDeleteDialog} 
                 handleClose={handleCloseCommentDeleteDialog} 
                 handleAgree={handleCommentAgree}
-            />
+            /> */}
         </Container>
     );
 }
 
-export default StudentProfile;
+export default WorkerProfile;

@@ -14,10 +14,6 @@ const App = ({ Component, pageProps }) => {
     const [authToken, setAuthToken] = React.useState();
     const [user, setUser] = React.useState();
 
-    React.useEffect(() => {
-        console.log(authToken)
-    }, [authToken])
-
     return (
         <AuthContext.Provider value={{authToken, setAuthToken, user, setUser}}>
             <SSRProvider>

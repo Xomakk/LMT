@@ -1,3 +1,4 @@
+from django.contrib.auth.models import Group
 from rest_framework import status
 from rest_framework.generics import (RetrieveUpdateDestroyAPIView, CreateAPIView, ListAPIView)
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -5,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from user.models import User
-from user.serializers import UserSerializer, UserRegisterSerializer, UserFullSerializer
+from user.serializers import UserSerializer, UserRegisterSerializer, GroupsSerializer
 
 
 class UserRegistrView(CreateAPIView):
@@ -45,5 +46,10 @@ class UserDetailView(RetrieveUpdateDestroyAPIView):
 
 class CurrentUserView(APIView):
     def get(self, request):
-        serializer = UserFullSerializer(request.user)
+        serializer = UserSerializer(request.user)
         return Response(serializer.data)
+
+
+class GroupListView(ListAPIView):
+    queryset = Group.objects.all()
+    serializer_class = GroupsSerializer

@@ -18,7 +18,13 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
 export const AddStudentsDialog = ({status, handleClose, updateData, group}) => {
     const [students, setStudents] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
-    const [selectedStudents, setSelectedStudents] = React.useState(group.students);
+    const [selectedStudents, setSelectedStudents] = React.useState([]);
+
+    React.useEffect(() => {
+        if (group) {
+            setSelectedStudents(group.students);
+        }
+    }, [group])
 
     const getStudents = async () => {
         const newResponse = await fetch(`${endpoint}/students/`);

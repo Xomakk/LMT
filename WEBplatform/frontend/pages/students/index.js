@@ -64,6 +64,9 @@ const Students = () => {
 
     return (
         <Container maxWidth="xl" sx={{ mt: 4, mb: 4}}>
+            <Typography  level="h2" component="div" sx={{mb: 4}}>
+                Ученики
+            </Typography>
             <Stack spacing={2}>
                 <Stack direction={'row'} gap={1} justifyContent={'space-between'} alignItems={'center'}>
                     <Stack spacing={1} direction={'row'}>

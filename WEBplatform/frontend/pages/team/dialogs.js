@@ -191,7 +191,7 @@ export const StudentDialog = ({status, handleClose, updateData, adding, student}
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>Закрыть</Button>
-                    <Button type='submit'>Сохранить</Button>
+                    <Button onClick={adding ? handleAddStudent : handleEditStudent}>Сохранить</Button>
                 </DialogActions>
             </form>
         </Dialog>

@@ -4,7 +4,7 @@ import datetime
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from feedback.models import FeedbackList, FeedbackGroupList, Feedback, FeedbackStudentList
+from feedback.models import FeedbackList, FeedbackGroupList, Feedback, FeedbackStudentList, GeneratedReport
 from groups.models import Lesson, Student, StudentLessonStatus, LearningGroup
 
 
@@ -46,3 +46,11 @@ def post_save_FeedbackStudentList(created, instance, **kwargs):
                         parameter=param,
                         feedback_student_list=instance
                     )
+
+
+@receiver(post_save, sender=FeedbackStudentList)
+def post_save_FeedbackStudentList(created, instance, **kwargs):
+    if created:
+        GeneratedReport.objects.create(
+            feedback_student_list=instance
+        )

@@ -91,3 +91,17 @@ class Feedback(models.Model):
 
     def __str__(self):
         return f'{self.parameter}: | {self.parameter.learning_direction.name}: | {self.feedback_student_list}'
+
+
+class GeneratedReport(models.Model):
+    feedback_student_list = models.OneToOneField(FeedbackStudentList, on_delete=models.CASCADE,
+                                              verbose_name='Лист ОС ученика', related_name='generated_report')
+    text = models.TextField('Комментарий', blank=True)
+
+    class Meta:
+        verbose_name = 'Генерируемый отчет'
+        verbose_name_plural = 'Генерируемые отчеты'
+        ordering = ['feedback_student_list']
+
+    def __str__(self):
+        return f'Отчет для: {self.feedback_student_list}'

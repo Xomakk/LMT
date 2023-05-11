@@ -2,7 +2,7 @@ from django.urls import path
 
 from groups.views import GroupListView, GroupDetailView, GroupCreateView, StudentListCreateView, StudentDetailView, \
     StudentAddGroupView, LessonDetailView, LessonAttendenseView, \
-    LessonListView, CurrentLessonListView
+    LessonListView, CurrentLessonListView, StudentCommentsView
 
 urlpatterns = [
     path('api/v1/groups/', GroupListView.as_view()),
@@ -12,6 +12,8 @@ urlpatterns = [
 
     path('api/v1/students/', StudentListCreateView.as_view()),
     path('api/v1/students/<int:pk>/', StudentDetailView.as_view()),
+    path('api/v1/students/<int:pk>/comments/', StudentCommentsView.as_view()),
+    path('api/v1/students/<int:pk>/comments/<int:id_comment>/', StudentCommentsView.as_view()),
     path('api/v1/students/addGroup/<int:group_id>/', StudentAddGroupView.as_view()),
 
     path('api/v1/lessons/', LessonListView.as_view()),

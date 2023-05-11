@@ -4,10 +4,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Checkbox, DialogContentText, FormControlLabel, FormGroup, MenuItem } from '@mui/material';
-import { Alert, Autocomplete, Box, Button, FormControl, FormLabel, IconButton, Input, Stack, Textarea, Typography } from '@mui/joy';
+import { Alert, Autocomplete, AutocompleteOption, Avatar, Box, Button, FormControl, FormLabel, IconButton, Input, ListItemContent, ListItemDecorator, Radio, RadioGroup, Stack, Textarea, Typography, radioClasses } from '@mui/joy';
 import AddIcon from '@mui/icons-material/Add';
 import * as React from 'react';
 import ClearIcon from '@mui/icons-material/Clear';
+import { endpoint } from '@/utils/constants';
+import { getFullName } from '@/utils/functions';
 
 
 export const CourseDialog = ({status, handleClose, updateData, params}) => {
@@ -64,7 +66,7 @@ export const CourseDialog = ({status, handleClose, updateData, params}) => {
                         value={params.courseName}
                         onChange={(e) => params.setCourseName(e.target.value)}
                     />
-                    <Typography>Длительность курса (в годах)</Typography>
+                    <Typography>Длительность курса (в месяцах)</Typography>
                     <Input
                         margin="dense"
                         id="course_duration"
@@ -145,6 +147,27 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
             label: 'Воскресенье',
         },
     ];
+
+    const [teachers, setTeachers] = React.useState([]);
+    const [curators, setCurators] = React.useState([]);
+
+    const fetchTeachers = async () => {
+        const response = await fetch(`${endpoint}/profiles/`);
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error('Ошибка получения списка сотрудников. RESPONSE ERROR');
+        }
+
+        setTeachers(data);
+        setCurators(data);
+    }
+
+    React.useEffect(() => {
+        if (status) {
+            fetchTeachers();
+        }
+    }, [status])
     
     const handleCheckSelectDays = (event) => {
         const id = event.target.id
@@ -172,7 +195,7 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
         <Dialog open={status} onClose={handleClose}>
             <DialogTitle>Настройки группы</DialogTitle>
             <DialogContent sx={{minWidth: '400px'}}>
-                <Stack gap={1}>
+                <Stack gap={2}>
                     <FormControl>
                         <FormLabel>Название группы</FormLabel>
                         <Input
@@ -188,7 +211,6 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
                         <FormLabel>Год обучения (курс)</FormLabel>
                         <Input
                             margin="dense"
-                            
                             type="number"
                             variant="outlined"
                             value={params.studyYear}
@@ -199,13 +221,27 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
                         <FormLabel>Преподаватель</FormLabel>
                         {/* <Autocomplete
                             placeholder="Combo box"
-                            value={params.teacher}
                             onChange={(e) => params.setTeacher(e.target.value)}
-                            options={
-                                params.teachers && params.teachers.map((option) => (
+                            options={teachers}
+                            getOptionLabel={(option) => (
                                     `${option.lastname} ${option.name} ${option.patronymic}`
-                                ))
-                            }
+                                )}
+                            renderOption={(props, option) => (
+                                <AutocompleteOption key={option.id}>
+                                    <ListItemDecorator>
+                                        <Avatar
+                                            src='#'
+                                        >
+                                            {option.name[0] + option.lastname[0]}
+                                        </Avatar>
+                                    </ListItemDecorator>
+                                    <ListItemContent sx={{ fontSize: 'sm' }}>
+                                        <Typography level="body1" fontWeight='bold'>
+                                            `${option.lastname} ${option.name} ${option.patronymic}`
+                                        </Typography>
+                                    </ListItemContent>
+                                </AutocompleteOption>
+                                )}
                         /> */}
                         <TextField
                             select
@@ -213,7 +249,22 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
                             value={params.teacher}
                             onChange={(e) => params.setTeacher(e.target.value)}
                         >
-                            {params.teachers && params.teachers.map((option) => (
+                            {teachers && teachers.map((option) => (
+                                <MenuItem key={option.id} value={option.id}>
+                                    {`${option.lastname} ${option.name} ${option.patronymic} `}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>Куратор</FormLabel>
+                        <TextField
+                            select
+                            variant="outlined"
+                            value={params.curator}
+                            onChange={(e) => params.setCurator(e.target.value)}
+                        >
+                            {curators && curators.map((option) => (
                                 <MenuItem key={option.id} value={option.id}>
                                     {`${option.lastname} ${option.name} ${option.patronymic} `}
                                 </MenuItem>
@@ -253,15 +304,81 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
                             variant="outlined"
                             value={params.timeLesson}
                             onChange={(e) => params.setTimeLesson(e.target.value)}
-                            sx={{mb: 2}}
                         />
                     </FormControl>
                     <FormControl>
-                        <Typography variant="standard">Дни занятий:</Typography>
+                        <FormLabel>Статус</FormLabel>
+                        <RadioGroup
+                            orientation="horizontal"
+                            variant="outlined"
+                            value={params.groupStatus}
+                            onChange={(event) => params.setGroupStatus(Number(event.target.value))}
+                            sx={{
+                                display: 'flex', justifyContent: 'center'
+                            }}
+                        >
+                        {[10, 20].map((item) => (
+                            <Box
+                                key={item}
+                                sx={{
+                                    flex: 1,
+                                    position: 'relative',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    height: 32,
+                                    '&:not([data-first-child])': {
+                                    borderLeft: '1px solid',
+                                    borderColor: 'divider',
+                                    },
+                                    [`&[data-first-child] .${radioClasses.action}`]: {
+                                    borderTopLeftRadius: `5px`,
+                                    borderBottomLeftRadius: `5px`,
+                                    },
+                                    [`&[data-last-child] .${radioClasses.action}`]: {
+                                    borderTopRightRadius: `5px`,
+                                    borderBottomRightRadius: `5px`,
+                                    },
+                                }}
+                            >
+                                <Radio
+                                    value={item}
+                                    disableIcon
+                                    overlay
+                                    label={
+                                        {
+                                            20: <Typography sx={{p: 2}}>{'Завершена'}</Typography>,
+                                            10: <Typography sx={{p: 2}}>{'Активна'}</Typography>,
+                                        }[item]
+                                    }
+                                    variant={params.groupStatus === item ? 'solid' : 'plain'}
+                                    color={item === 20 ? 'neutral' : 'success' }
+                                    slotProps={{
+                                    input: { 'aria-label': item },
+                                    action: {
+                                        sx: { borderRadius: 0, transition: 'none'},
+                                    },
+                                    }}
+                                />
+                            </Box>
+                            ))}
+                        </RadioGroup>
+                    </FormControl>
+                    <FormControl>
+                        <FormLabel>Дни занятий:</FormLabel>
                         {errorCheckedDays && <Alert color="danger">Нужно обязательно выбрать хотя бы один день. <br/>Вы сможете отредактировать это после создания группы.</Alert>}
                         <FormGroup>
                             {days.map((option) => (
-                                <FormControlLabel key={option.value} control={<Checkbox id={option.value} checked={params.daysOfLessons?.includes(option.value)} onChange={handleCheckSelectDays} />} label={option.label} />
+                                <FormControlLabel 
+                                    key={option.value} 
+                                    control={
+                                        <Checkbox id={option.value} 
+                                        checked={params.daysOfLessons?.includes(option.value)} 
+                                        onChange={handleCheckSelectDays} 
+                                    />}
+                                    sx={{mb: -1}}
+                                    label={option.label} 
+                                />
                             ))}
                         </FormGroup>
                     </FormControl>
@@ -269,7 +386,7 @@ export const GroupDialog = ({status, handleClose, updateData, params}) => {
             </DialogContent>
             <DialogActions>
                 <Button onClick={handleClose}>Закрыть</Button>
-                <Button onClick={handleSubmit}>Добавить</Button>
+                <Button onClick={handleSubmit}>Сохранить</Button>
             </DialogActions>
         </Dialog>
     )
@@ -280,41 +397,56 @@ export const TopicDialog = ({status, handleClose, updateData, params}) => {
     return (
         <Dialog open={status} onClose={handleClose}>
             <DialogTitle>Добавление\Редактирование темы</DialogTitle>
-            <DialogContent>
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Номер темы"
-                    type="number"
-                    fullWidth
-                    variant="standard"
-                    value={params.topicNumber}
-                    onChange={(e) => params.setTopicNumber(e.target.value)}
-                />
-                <TextField
-                    autoFocus
-                    margin="dense"
-                    label="Название темы"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    value={params.topicName}
-                    onChange={(e) => params.setTopicName(e.target.value)}
-                />
-                <TextField
-                    margin="dense"
-                    label="Ссылка на методические материалы"
-                    type="text"
-                    fullWidth
-                    variant="standard"
-                    value={params.topicMethodicalMaterial}
-                    onChange={(e) => params.setTopicMethodicalMaterial(e.target.value)}
-                />
-            </DialogContent>
-            <DialogActions>
-                <Button onClick={handleClose}>Закрыть</Button>
-                <Button onClick={updateData}>Отправить</Button>
-            </DialogActions>
+            <form onSubmit={(event) => {
+                event.preventDefault();
+                updateData();
+            }}>
+                <DialogContent sx={{minWidth: '400px'}}>
+                    <Stack spacing={2}>
+                        <FormControl>
+                            <FormLabel>Порядковый номер</FormLabel>
+                            <Input
+                                autoFocus
+                                required
+                                type="number"
+                                variant="outlined"
+                                value={params.topicNumber}
+                                slotProps={{
+                                input: {
+                                    min: 1,
+                                    step: 1,
+                                    },
+                                }}
+                                onChange={(e) => params.setTopicNumber(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Название</FormLabel>
+                            <Input
+                                required
+                                type="text"
+                                variant="outlined"
+                                value={params.topicName}
+                                onChange={(e) => params.setTopicName(e.target.value)}
+                            />
+                        </FormControl>
+                        <FormControl>
+                            <FormLabel>Ссылка на методические материалы</FormLabel>
+                            <Input
+                                required
+                                type="text"
+                                variant="outlined"
+                                value={params.topicMethodicalMaterial}
+                                onChange={(e) => params.setTopicMethodicalMaterial(e.target.value)}
+                            />
+                        </FormControl>
+                    </Stack>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose}>Закрыть</Button>
+                    <Button type='submit'>Отправить</Button>
+                </DialogActions>
+            </form>
         </Dialog>
     );
 }

@@ -1,5 +1,5 @@
 # Create your views here.
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, ListAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,6 +10,17 @@ from feedback.serializers import FeedbackParamSerializer
 from learningDirections.models import LearningDirection, Syllabus, Topic
 from learningDirections.serializers import SyllabusSerializer, TopicSerializer, \
     LearningDirectionSerializer, LearningDirectionAttendanceSerializer
+
+
+class LearningDirectionListView(ListAPIView):
+    class Serializer(serializers.ModelSerializer):
+        class Meta:
+            model = LearningDirection
+            fields = '__all__'
+
+    queryset = LearningDirection.objects.all()
+    serializer_class = Serializer
+    # permission_classes = [IsAuthenticated]
 
 
 class LearningDirectionCreateView(ListCreateAPIView):
